@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORA/ORAPC - Sala Situacional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Fondo de espacio profundo con degradado y nebulosa */
+            background-color: #000428;
+            background-image: 
+                radial-gradient(ellipse at 70% 30%, rgba(192, 38, 211, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(255, 107, 1, 0.3) 0%, transparent 50%),
+                linear-gradient(to right, #000428, #004e92);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Efecto de estrellas animadas */
+        .stars, .stars2, .stars3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .stars {
+            background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15" cy="15" r="1" fill="white"/><circle cx="35" cy="45" r="1" fill="white"/><circle cx="55" cy="75" r="1" fill="white"/><circle cx="75" cy="15" r="1" fill="white"/><circle cx="95" cy="45" r="1" fill="white"/></svg>');
+            animation: animStar 50s linear infinite;
+        }
+        .stars2 {
+            background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="25" cy="55" r="0.5" fill="white"/><circle cx="45" cy="85" r="0.5" fill="white"/><circle cx="65" cy="25" r="0.5" fill="white"/><circle cx="85" cy="55" r="0.5" fill="white"/><circle cx="105" cy="85" r="0.5" fill="white"/></svg>');
+            animation: animStar 100s linear infinite;
+        }
+        @keyframes animStar {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+
+        .login-container {
+            position: relative;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            padding: 50px 40px;
+            background: rgba(10, 10, 15, 0.15); /* Glassmorphism */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            /* Bordes de neón púrpura y naranja */
+            box-shadow: 
+                0 0 15px rgba(192, 38, 211, 0.5), 
+                0 0 30px rgba(192, 38, 211, 0.4),
+                0 0 45px rgba(255, 107, 1, 0.3),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        h1 {
+            color: #E5E7EB;
+            font-weight: 500;
+            font-size: 2em;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px 12px 40px; /* Ajustado: Padding izquierdo reducido para mover el texto a la izquierda */
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #FFF;
+            font-size: 1em;
+            box-sizing: border-box; /* CORRECCIÓN: Asegura que el padding no desborde el contenedor */
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: #8892b0;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 10px rgba(255, 107, 1, 0.5), 0 0 15px rgba(192, 38, 211, 0.4);
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 15px; /* Movido el icono a la izquierda */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #8892b0; /* Usar 'color' en lugar de 'fill' */
+            pointer-events: none; /* Evita que el icono interfiera con el clic en el input */
+            transition: color 0.3s ease;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #030712;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #E5E7EB;
+            font-size: 1.1em;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+             margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #111827;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Cambia el color del icono cuando el input está enfocado para mayor consistencia */
+        .input-field:focus + .icon {
+            color: #E5E7EB;
+        }
+
+        #error-message {
+            position: absolute;
+            bottom: 20px;
+            color: #F87171;
+            background-color: rgba(185, 28, 28, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            display: none;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        @media (max-width: 420px) {
+            .login-container {
+                width: 90vw;
+                padding: 40px 25px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Contenedores para el efecto de estrellas -->
+    <div class="stars"></div>
+    <div class="stars2"></div>
+
+    <div class="login-container">
+        <h1>ORA/ORAPC</h1>
+        <form id="loginForm" style="display: contents;">
+            <div class="input-wrapper">
+                <input type="text" id="username" name="username" class="input-field" placeholder="Username" required>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12.5c-3.04 0-5.5 2.46-5.5 5.5v1.5h11v-1.5c0-3.04-2.46-5.5-5.5-5.5zm0-10C9.24 2.5 7 4.74 7 7.5S9.24 12.5 12 12.5s5-2.24 5-5-2.24-5-5-5z"/>
+                </svg>
+            </div>
+            <div class="input-wrapper">
+                <input type="password" id="password" name="password" class="input-field" placeholder="Password" required>
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1V8z"/>
+                </svg>
+            </div>
+            <button type="submit" class="login-btn">LOGIN</button>
+        </form>
+        <div id="error-message">Usuario o contraseña incorrectos.</div>
+    </div>
+
+    <script>
+        // VERIFICACIÓN INICIAL:
+        // Si el usuario ya está autenticado, no debe ver esta página.
+        // Lo redirigimos inmediatamente a la página principal.
+        // Se usa 'replace' para no interferir con el historial de navegación.
+        if (sessionStorage.getItem('isAuthenticated') === 'true') {
+            window.location.replace('index.html');
+        }
+
+        // LÓGICA DEL FORMULARIO DE LOGIN:
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            const authorizedUsers = [
+                { username: 'admin', password: '1234' },
+                { username: 'usuario1', password: 'password1' },
+                { username: 'analista05', password: 'analista_pass' },
+                { username: 'supervisor', password: 'super_secret' },
+                { username: 'operador_zulia', password: 'zulia2025' },
+                // ... puedes seguir agregando más usuarios aquí
+            ];
+
+            // Busca si el usuario ingresado existe en la lista
+            const foundUser = authorizedUsers.find(user => user.username === username);
+
+            // Verifica si el usuario fue encontrado y si la contraseña coincide
+            if (foundUser && foundUser.password === password) {
+                // Si las credenciales son correctas, se marca al usuario como autenticado.
+                sessionStorage.setItem('isAuthenticated', 'true');
+                // Se redirige usando 'replace()' para que la página de login no quede en el historial.
+                window.location.replace('index.html');
+            } else {
+                // Si son incorrectas, muestra un mensaje de error
+                errorMessage.style.display = 'block';
+                // Ocultar el mensaje después de 3 segundos
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+
+</body>
+</html>
