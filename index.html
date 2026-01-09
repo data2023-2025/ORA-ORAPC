@@ -1002,6 +1002,9 @@
         // 3. FUNCIONES DE UTILIDAD Y LÓGICA DE LA APP PRINCIPAL
         // =================================================================
         
+        // IMPORTANTE: Reemplaza esto con la URL de tu implementación Web App de Google Apps Script
+        const appsScriptURL = 'PEGA_AQUI_LA_URL_DE_TU_WEB_APP_EJECUTABLE';
+
         let isAppInitialized = false; // Flag to avoid reinitializations
         
         function initApp() {
@@ -1083,30 +1086,37 @@
             submitButton.disabled = true;
             submitButton.textContent = 'Guardando...';
 
-            // Llamada al lado del servidor (Code.gs)
-            google.script.run
-                .withSuccessHandler(function(response) {
-                    if (response.success) {
-                        showAppMessage(response.message, 'success');
-                        form.reset();
-                        document.getElementById('registro-automatico').textContent = '-';
-                        openTab('tab-1');
-                    } else {
-                        showAppMessage(response.message, 'danger');
-                    }
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = '💾 Guardar Registro';
-                })
-                .withFailureHandler(function(error) {
-                    showAppMessage('Error de comunicación con el servidor: ' + error.message, 'danger');
-                    submitButton.disabled = false; // Reactiva el botón en caso de error
-                    submitButton.innerHTML = '💾 Guardar Registro';
-                })
-                .submitApplicationForm(data); // Llama a la función en Code.gs
+            try {
+                if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
+                    throw new Error('La URL del script no está configurada en el código.');
+                }
+
+                // Usamos fetch para conectar con la Web App
+                const response = await fetch(appsScriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(data) // Enviamos los datos como JSON
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success' || result.success) {
+                    showAppMessage(result.message || 'Registro guardado correctamente.', 'success');
+                    form.reset();
+                    document.getElementById('registro-automatico').textContent = '-';
+                    openTab('tab-1');
+                } else {
+                    throw new Error(result.message || 'Error desconocido al guardar.');
+                }
+            } catch (error) {
+                showAppMessage('Error: ' + error.message, 'danger');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '💾 Guardar Registro';
+            }
         }
 
         // --- Automatic ID Generation Logic ---
-        function triggerIdGeneration() {
+        async function triggerIdGeneration() {
             const estadoInput = document.getElementById('estado');
             const registroDisplay = document.getElementById('registro-automatico');
             const estado = estadoInput.value.trim();
@@ -1118,25 +1128,28 @@
 
             registroDisplay.textContent = 'Generando...';
 
-            google.script.run
-                .withSuccessHandler(function(correlativo) {
-                    if (typeof correlativo === 'number') {
-                        const diminutivo = estado.substring(0, 4).toLowerCase();
-                        const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
-                        const correlativoFormateado = correlativo.toString().padStart(2, '0');
-                        registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
-                    } else {
-                        // Si el backend devuelve un error como string
-                        registroDisplay.textContent = 'Error';
-                        showAppMessage(correlativo, 'danger');
-                    }
-                })
-                .withFailureHandler(function(error) {
-                    console.error("Error al obtener el correlativo:", error);
+            try {
+                if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
+                    registroDisplay.textContent = 'Sin Conexión';
+                    return;
+                }
+
+                // Solicitud GET para obtener el correlativo
+                const response = await fetch(`${appsScriptURL}?estado=${encodeURIComponent(estado)}`);
+                const data = await response.json();
+
+                if (data.correlativo) {
+                    const diminutivo = estado.substring(0, 4).toLowerCase();
+                    const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
+                    const correlativoFormateado = data.correlativo.toString().padStart(2, '0');
+                    registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
+                } else {
                     registroDisplay.textContent = 'Error';
-                    showAppMessage('Fallo al generar ID: ' + error.message, 'danger');
-                })
-                .getCorrelativoPorEstado(estado);
+                }
+            } catch (error) {
+                console.error("Error al obtener ID:", error);
+                registroDisplay.textContent = 'Error';
+            }
         }
 
         function showAppMessage(msg, type = 'info') {
