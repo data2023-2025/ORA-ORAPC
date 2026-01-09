@@ -13,8 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
     
     <!-- Estilos del Formulario Principal (index.html) -->
-    <style>
+    
     /* VARIABLES (Se mantienen, son excelentes) */
+    <style>
     :root {
          /* Paleta de Colores Profesional */
         --color-primary: #2563EB; /* Azul corporativo (Blue-600) */
@@ -372,12 +373,6 @@
         flex-wrap: wrap;
     }
 
-    /* Botones flexibles: se expanden proporcionalmente y se alinean en fila */
-    .form-actions button {
-        flex-grow: 1;
-        margin-top: 0; /* Elimina márgenes individuales para usar el gap del flex */
-    }
-
     /* --- DARK MODE OVERRIDES (Ajustes finos para el modo oscuro) --- */
 
     body.dark-mode.app-active {
@@ -485,10 +480,6 @@
     /* --- MEDIA QUERIES (Se mantienen, pero con ajustes) --- */
 
     @media (max-width: 767px) {
-        #main-content {
-            padding: 10px; /* Menos padding externo para aprovechar la pantalla */
-        }
-
         .header-container {
             flex-direction: column; 
             gap: 15px;
@@ -498,7 +489,6 @@
 
         .header-container h1 {
             text-align: center;
-            font-size: 1.6em; /* Ajuste de tamaño de fuente para móviles */
         }
 
         .header-container > div {
@@ -506,7 +496,6 @@
             flex-direction: column;
             align-items: center; 
             gap: 10px;
-            width: 100%;
         }
         
         .tab-link {
@@ -516,11 +505,10 @@
 
         .container {
             padding: 20px 15px;
-            border-radius: 12px; /* Bordes más suaves en móvil */
         }
 
         .form-section {
-            padding: 15px; /* Optimización de espacio interno */
+            padding: 20px;
         }
 
         /* Las grillas se apilan por debajo de 768px (1 columna) */
@@ -528,9 +516,8 @@
             grid-template-columns: 1fr;
         }
 
-        /* Ocultar barra de desplazamiento en pestañas para mejor estética */
-        .tab-navigation::-webkit-scrollbar {
-            display: none;
+        .form-actions {
+            justify-content: center;
         }
     }
     
@@ -686,7 +673,6 @@
                 padding: 40px 25px;
             }
         }
-    </style>
 </head>
 <body>
 
@@ -1002,9 +988,6 @@
         // 3. FUNCIONES DE UTILIDAD Y LÓGICA DE LA APP PRINCIPAL
         // =================================================================
         
-        // IMPORTANTE: Cuando el HTML está en Apps Script, usamos google.script.run
-        // NO necesitas la URL de Apps Script aquí
-
         let isAppInitialized = false; // Flag to avoid reinitializations
         
         function initApp() {
@@ -1027,14 +1010,6 @@
             // Logic for automatic ID and Date/Time
             const estadoInput = document.getElementById('estado');
             estadoInput.addEventListener('input', triggerIdGeneration);
-            
-            // Validación al perder el foco
-            estadoInput.addEventListener('blur', function() {
-                if (this.value.trim().length < 4 && this.value.trim().length > 0) {
-                    showAppMessage('Por favor ingrese un estado válido (mínimo 4 caracteres)', 'danger');
-                }
-            });
-
             if (estadoInput.value.trim() !== '') {
                 triggerIdGeneration();
             }
@@ -1076,7 +1051,7 @@
         }
         
         // --- Form Submission Logic ---
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(dataForm);
@@ -1087,59 +1062,36 @@
                 return;
             }
 
-            // Convertir FormData a objeto
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-            data.n_registro = n_registro;
+            const data = Object.fromEntries(formData.entries());
+            data.n_registro = n_registro; // Añadir el número de registro
 
             const submitButton = dataForm.querySelector('button[type="submit"]');
             submitButton.disabled = true;
             submitButton.textContent = 'Guardando...';
 
-            // Verificar si estamos en el entorno de Google Apps Script
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                // Usar google.script.run para enviar datos al servidor
-                google.script.run
-                    .withSuccessHandler(function(result) {
-                        if (result.success) {
-                            showAppMessage(result.message || '✅ Registro guardado correctamente.', 'success');
-                            form.reset();
-                            document.getElementById('registro-automatico').textContent = '-';
-                            openTab('tab-1');
-                        } else {
-                            throw new Error(result.message || 'Error desconocido al guardar.');
-                        }
-                    })
-                    .withFailureHandler(function(error) {
-                        showAppMessage('❌ Error del servidor: ' + error.message, 'danger');
-                    })
-                    .submitApplicationForm(data);
-            } else {
-                // Modo de prueba (si no estamos en Apps Script)
-                console.log("📋 Datos a enviar (modo prueba):", data);
-                showAppMessage('✅ Datos preparados para enviar. Revisa la consola (F12).', 'info');
-                
-                // Simular éxito después de 1 segundo
-                setTimeout(() => {
+            // Llamada al lado del servidor (Code.gs)
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    if (response.success) {
+                        showAppMessage(response.message, 'success');
+                        form.reset();
+                        document.getElementById('registro-automatico').textContent = '-';
+                        openTab('tab-1');
+                    } else {
+                        showAppMessage(response.message, 'danger');
+                    }
                     submitButton.disabled = false;
                     submitButton.innerHTML = '💾 Guardar Registro';
-                    showAppMessage('✅ En modo de prueba. Los datos se mostrarían en consola.', 'info');
-                }, 1000);
-                return; // No continuar con el envío real
-            }
-
-            // Restaurar el botón después de 5 segundos (por si hay algún error)
-            setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.innerHTML = '💾 Guardar Registro';
-            }, 5000);
+                })
+                .withFailureHandler(function(error) {
+                    showAppMessage('Error de comunicación con el servidor: ' + error.message, 'danger');
+                    submitButton.disabled = false; // Reactiva el botón en caso de error
+                    submitButton.innerHTML = '💾 Guardar Registro';
+                })
+                .submitApplicationForm(data); // Llama a la función en Code.gs
         }
 
         // --- Automatic ID Generation Logic ---
-        let idGenerationTimeout;
-
         function triggerIdGeneration() {
             const estadoInput = document.getElementById('estado');
             const registroDisplay = document.getElementById('registro-automatico');
@@ -1150,34 +1102,27 @@
                 return;
             }
 
-            // Limpiar timeout existente
-            clearTimeout(idGenerationTimeout);
+            registroDisplay.textContent = 'Generando...';
 
-            // Establecer nuevo timeout (debounce)
-            idGenerationTimeout = setTimeout(() => {
-                registroDisplay.textContent = 'Generando...';
-
-                // Generar ID localmente (modo offline/fallback)
-                const diminutivo = estado.substring(0, 4).toLowerCase();
-                const fecha = new Date().toLocaleDateString('es-ES', { 
-                    day:'2-digit', 
-                    month:'2-digit', 
-                    year:'2-digit' 
-                }).replace(/\//g, '');
-                
-                // Usar timestamp para un ID único
-                const timestamp = Date.now().toString().slice(-4);
-                const correlativo = parseInt(timestamp) % 99 + 1;
-                const correlativoFormateado = correlativo.toString().padStart(2, '0');
-                
-                registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
-                
-                // Si estamos en Apps Script, podríamos obtener un ID del servidor
-                if (typeof google !== 'undefined' && google.script && google.script.run) {
-                    // Aquí podrías llamar a una función del servidor para obtener un ID real
-                    // google.script.run.withSuccessHandler(handleServerId).getNextId(estado);
-                }
-            }, 500);
+            google.script.run
+                .withSuccessHandler(function(correlativo) {
+                    if (typeof correlativo === 'number') {
+                        const diminutivo = estado.substring(0, 4).toLowerCase();
+                        const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
+                        const correlativoFormateado = correlativo.toString().padStart(2, '0');
+                        registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
+                    } else {
+                        // Si el backend devuelve un error como string
+                        registroDisplay.textContent = 'Error';
+                        showAppMessage(correlativo, 'danger');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Error al obtener el correlativo:", error);
+                    registroDisplay.textContent = 'Error';
+                    showAppMessage('Fallo al generar ID: ' + error.message, 'danger');
+                })
+                .getCorrelativoPorEstado(estado);
         }
 
         function showAppMessage(msg, type = 'info') {
@@ -1186,28 +1131,9 @@
             messageDisplay.className = ''; // Clear previous classes
             messageDisplay.classList.add(`message-${type}`);
             messageDisplay.style.display = 'block';
-            
-            // Auto-ocultar después de 5 segundos
-            setTimeout(() => { 
-                if (messageDisplay.textContent === msg) {
-                    messageDisplay.style.display = 'none'; 
-                }
-            }, 5000);
+            setTimeout(() => { messageDisplay.style.display = 'none'; }, 5000);
         }
-        
-        // Función para verificar si estamos en Apps Script
-        function isGoogleAppsScriptEnvironment() {
-            return typeof google !== 'undefined' && google.script && google.script.run;
-        }
-        
-        // Verificar entorno al cargar
-        document.addEventListener('DOMContentLoaded', function() {
-            if (isGoogleAppsScriptEnvironment()) {
-                console.log("✅ Conectado a Google Apps Script");
-            } else {
-                console.log("⚠️ Modo de prueba - No conectado a Google Apps Script");
-            }
-        });
     </script>
+
 </body>
 </html>
