@@ -729,7 +729,7 @@
                 </div>
             </div>
             <form id="dataForm">
-                <-- Navegación de Pestañas -->
+                <!-- Navegación de Pestañas -->
                 <div class="tab-navigation">
                     <button type="button" class="tab-link active" data-tab="tab-1">Identificación y Poder Popular</button>
                     <button type="button" class="tab-link" data-tab="tab-2">Social y Política</button>
@@ -737,7 +737,7 @@
                     <button type="button" class="tab-link" data-tab="tab-4">Productivo y Observaciones</button>
                 </div>
 
-                <-- Contenido de las Pestañas -->
+                <!-- Contenido de las Pestañas -->
                 <div id="tab-1" class="tab-content active">
                     <div class="form-section">
                         <h2>1. Identificación Geográfica y Administrativa</h2>
@@ -897,7 +897,7 @@
                     </div>
                 </div>
 
-                <-- Botones de Acción -->
+                <!-- Botones de Acción -->
                 <div class="form-actions">
                     <div id="message" style="width: 100%; order: -1;"></div>
                     <button type="button" class="btn-secondary" id="logoutBtn">Cerrar Sesión</button>
@@ -1003,7 +1003,7 @@
         // =================================================================
         
         // IMPORTANTE: Reemplaza esto con la URL de tu implementación Web App de Google Apps Script
-        const appsScriptURL = "https://script.google.com/macros/s/AKfycbxHtuR3hyTdE3PYT3SCgz_7QDIDuVT8ncE77p8EN2U-b1bV0sAc8-YiwjbMXOZWCEvw4g/exec";
+        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbxHtuR3hyTdE3PYT3SCgz_7QDIDuVT8ncE77p8EN2U-b1bV0sAc8-YiwjbMXOZWCEvw4g/exec';
 
         let isAppInitialized = false; // Flag to avoid reinitializations
         
@@ -1027,6 +1027,14 @@
             // Logic for automatic ID and Date/Time
             const estadoInput = document.getElementById('estado');
             estadoInput.addEventListener('input', triggerIdGeneration);
+            
+            // Validación al perder el foco
+            estadoInput.addEventListener('blur', function() {
+                if (this.value.trim().length < 4 && this.value.trim().length > 0) {
+                    showAppMessage('Por favor ingrese un estado válido (mínimo 4 caracteres)', 'danger');
+                }
+            });
+
             if (estadoInput.value.trim() !== '') {
                 triggerIdGeneration();
             }
@@ -1116,7 +1124,9 @@
         }
 
         // --- Automatic ID Generation Logic ---
-        async function triggerIdGeneration() {
+        let idGenerationTimeout;
+
+        function triggerIdGeneration() {
             const estadoInput = document.getElementById('estado');
             const registroDisplay = document.getElementById('registro-automatico');
             const estado = estadoInput.value.trim();
@@ -1126,30 +1136,36 @@
                 return;
             }
 
-            registroDisplay.textContent = 'Generando...';
+            // Limpiar timeout existente
+            clearTimeout(idGenerationTimeout);
 
-            try {
-                if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
-                    registroDisplay.textContent = 'Sin Conexión';
-                    return;
-                }
+            // Establecer nuevo timeout (debounce)
+            idGenerationTimeout = setTimeout(async () => {
+                registroDisplay.textContent = 'Generando...';
 
-                // Solicitud GET para obtener el correlativo
-                const response = await fetch(`${appsScriptURL}?estado=${encodeURIComponent(estado)}`);
-                const data = await response.json();
+                try {
+                    if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
+                        registroDisplay.textContent = 'Sin Conexión';
+                        return;
+                    }
 
-                if (data.correlativo) {
-                    const diminutivo = estado.substring(0, 4).toLowerCase();
-                    const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
-                    const correlativoFormateado = data.correlativo.toString().padStart(2, '0');
-                    registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
-                } else {
+                    // Solicitud GET para obtener el correlativo
+                    const response = await fetch(`${appsScriptURL}?estado=${encodeURIComponent(estado)}`);
+                    const data = await response.json();
+
+                    if (data.correlativo) {
+                        const diminutivo = estado.substring(0, 4).toLowerCase();
+                        const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
+                        const correlativoFormateado = data.correlativo.toString().padStart(2, '0');
+                        registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
+                    } else {
+                        registroDisplay.textContent = 'Error';
+                    }
+                } catch (error) {
+                    console.error("Error al obtener ID:", error);
                     registroDisplay.textContent = 'Error';
                 }
-            } catch (error) {
-                console.error("Error al obtener ID:", error);
-                registroDisplay.textContent = 'Error';
-            }
+            }, 500);
         }
 
         function showAppMessage(msg, type = 'info') {
@@ -1162,7 +1178,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
