@@ -160,10 +160,14 @@
             text-align: center;
         }
 
-        @media (max-width: 420px) {
+        @media (max-width: 480px) {
             .login-container {
-                width: 90vw;
-                padding: 40px 25px;
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
             }
         }
 
@@ -200,7 +204,7 @@
         // Lo redirigimos inmediatamente a la página principal.
         // Se usa 'replace' para no interferir con el historial de navegación.
         if (sessionStorage.getItem('isAuthenticated') === 'true') {
-            window.location.replace('index.html');
+            window.location.replace('./index.html');
         }
 
         // LÓGICA DEL FORMULARIO DE LOGIN:
@@ -227,7 +231,7 @@
                 // Si las credenciales son correctas, se marca al usuario como autenticado.
                 sessionStorage.setItem('isAuthenticated', 'true');
                 // Se redirige usando 'replace()' para que la página de login no quede en el historial.
-                window.location.replace('index.html');
+                window.location.replace('./index.html');
             } else {
                 // Si son incorrectas, muestra un mensaje de error
                 errorMessage.style.display = 'block';

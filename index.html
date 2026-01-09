@@ -3,856 +3,1150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Datos ORA/ORAPC - Sala Situacional</title>
+    <title>ORA/ORAPC - Sala Situacional</title>
+    
+    <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Estilos del Formulario Principal (index.html) -->
     <style>
-        
-        :root {
-            /* Paleta de Colores Profesional */
-            --color-primary: #2563EB; /* Azul corporativo */
-            --color-primary-hover: #1D4ED8;
-            --color-background: #F8F9FA; /* Fondo gris muy claro */
-            --color-surface: #FFFFFF; /* Superficie (Tarjetas/Formulario) */
-            --color-text: #334155; /* Texto gris oscuro */
-            --color-text-light: #64748B;
-            --color-border: #E2E8F0; /* Borde sutil */
-            --container-bg: #EBF8FF; /* Azul muy claro para el contenedor principal */
-            --color-focus-ring: rgba(37, 99, 235, 0.2);
+    /* VARIABLES (Se mantienen, son excelentes) */
+    :root {
+         /* Paleta de Colores Profesional */
+        --color-primary: #2563EB; /* Azul corporativo (Blue-600) */
+        --color-primary-hover: #1D4ED8; /* Blue-700 */
+        --color-background: #F8F9FA; /* Fondo gris muy claro */
+        --color-surface: #FFFFFF; /* Superficie (Tarjetas/Formulario) */
+        --color-text: #1E293B; /* Texto gris muy oscuro (Slate-900) */
+        --color-text-light: #64748B; /* Texto gris sutil (Slate-500) */
+        --color-border: #E2E8F0; /* Borde sutil (Slate-200) */
+        --container-bg: rgba(235, 248, 255, 0.95); /* Azul muy claro semi-transparente para el contenedor principal */
+        --color-focus-ring: rgba(37, 99, 235, 0.4); /* Anillo de enfoque más visible */
 
-            /* Dark Mode Variables */
-            --dm-color-background: #1A202C; /* Dark background */
-            --dm-color-surface: #2D3748; /* Dark surface */
-            --dm-color-text: #E2E8F0; /* Light text */
-            --dm-color-text-light: #A0AEC0; /* Lighter gray text */
-            --dm-color-border: #4A5568; /* Darker border */
-            --dm-container-bg: #2D3748; /* Dark container background */
-            --dm-color-primary: #63B3ED; /* Lighter blue for dark mode primary */
-            --dm-color-primary-hover: #4299E1;
-            --dm-color-focus-ring: rgba(99, 179, 237, 0.3);
+        /* Dark Mode Variables */
+        --dm-color-background: #0F172A; /* Dark background (Slate-900) */
+        --dm-color-surface: #1E293B; /* Dark surface (Slate-800) */
+        --dm-color-text: #F8FAFC; /* Light text (Slate-50) */
+        --dm-color-text-light: #94A3B8; /* Lighter gray text (Slate-400) */
+        --dm-color-border: #334155; /* Darker border (Slate-700) */
+        --dm-container-bg: rgba(30, 41, 59, 0.95); /* Dark container background semi-transparente */
+        --dm-color-primary: #60A5FA; /* Lighter blue for dark mode primary (Blue-400) */
+        --dm-color-primary-hover: #3B82F6; /* Blue-500 */
+        --dm-color-focus-ring: rgba(96, 165, 250, 0.5);
 
-            /* Estilos */
-            --border-radius-m: 6px; /* Bordes ligeramente más suaves */
-            --border-radius-l: 12px;
-            --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        /* Estilos */
+        --border-radius-m: 8px; /* Bordes ligeramente más suaves */
+        --border-radius-l: 16px; /* Para el contenedor principal */
+        --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --font-family-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    /* --- ESTILOS BASE --- */
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: var(--font-family-main);
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: var(--color-text);
+        background-color: var(--color-background); /* Color de fallback */
+        transition: background-image 0.5s ease-in-out, background-color 0.5s ease-in-out;
+    }
+
+    /* Fondo para la aplicación activa */
+    body.app-active {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
+    }
+
+    body.app-active.dark-mode {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2c5282 100%);
+    }
+
+    /* Contenido principal (Formulario) */
+    #main-content {
+        padding: 30px 20px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .container {
+        background-color: var(--container-bg);
+        padding: 40px;
+        border-radius: var(--border-radius-l);
+        box-shadow: var(--shadow-medium);
+        width: 100%;
+        max-width: 1200px; /* Un poco más ancho para layouts complejos */
+        border: 1px solid var(--color-border);
+        /* Efecto Glassmorphism sutil para el container principal cuando app-active */
+        backdrop-filter: blur(4px); 
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* --- ENCABEZADO Y TÍTULOS --- */
+
+    .header-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+    h1 {
+        font-weight: 700; /* Más audaz */
+        color: var(--color-primary-hover);
+        font-size: 2em; /* Más grande */
+        margin: 0;
+        padding: 0;
+        flex-grow: 1;
+        text-align: left; /* Alineado a la izquierda */
+        line-height: 1.2;
+    }
+
+    #datetime-display {
+        font-weight: 600;
+        color: var(--color-primary-hover);
+        font-size: 1.1em;
+        white-space: nowrap;
+        background-color: var(--color-surface);
+        padding: 6px 10px;
+        border-radius: var(--border-radius-m);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-subtle);
+    }
+
+    /* Botón de Cambio de Tema */
+    #theme-toggle {
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-border);
+        color: var(--color-text-light);
+        padding: 8px 12px;
+        border-radius: var(--border-radius-m);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        margin-top: 0; /* Asegura que no tenga margen extra */
+    }
+    #theme-toggle:hover {
+        background-color: var(--color-border);
+        color: var(--color-text);
+    }
+    #theme-toggle svg { width: 22px; height: 22px; fill: currentColor; }
+    .moon-icon { display: none; }
+    body.dark-mode .sun-icon { display: none; }
+    body.dark-mode .moon-icon { display: block; }
+
+    /* Contenedor de Sección del Formulario (Tarjeta) */
+    .form-section {
+        background-color: var(--color-surface);
+        padding: 30px; /* Más padding */
+        margin-bottom: 25px;
+        border-radius: var(--border-radius-m);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-subtle);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .form-section:focus-within {
+        box-shadow: var(--shadow-medium);
+        border-color: var(--color-primary);
+    }
+
+    h2 {
+        font-size: 1.5em;
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        font-weight: 600;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 10px;
+    }
+
+    h3 {
+        font-size: 1.2em;
+        color: var(--color-text);
+        margin-top: 25px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        border-bottom: 1px dotted var(--color-border);
+        padding-bottom: 5px;
+    }
+
+    /* --- CAMPOS DE FORMULARIO --- */
+
+    .form-group {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--color-text); /* Texto más legible */
+        font-size: 1em;
+    }
+    .form-group p { /* Estilo para textos estáticos (Registro Automático) */
+        font-weight: 600; 
+        font-size: 1.1em; 
+        color: var(--color-primary-hover); 
+        margin: 0;
+        padding: 10px 0;
+    }
+
+    input[type="text"], input[type="password"], input[type="number"], select, textarea {
+        padding: 12px 15px; /* Más padding */
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-m);
+        font-size: 1em;
+        transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+        background-color: var(--color-surface);
+        width: 100%;
+        color: var(--color-text);
+        box-shadow: var(--shadow-subtle);
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+        border-color: var(--color-primary);
+        outline: none;
+        box-shadow: 0 0 0 4px var(--color-focus-ring);
+    }
+
+    /* --- BOTONES --- */
+
+    .btn-primary, .btn-secondary, .btn-danger {
+        padding: 12px 25px;
+        border: none;
+        border-radius: var(--border-radius-m);
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .btn-primary {
+        background-color: var(--color-primary);
+        color: white;
+        margin-top: 20px;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-hover);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+
+    /* Estilo del botón secundario (para toggle/otras acciones) */
+    .btn-secondary {
+        background-color: var(--color-surface);
+        color: var(--color-text);
+        border: 1px solid var(--color-border);
+    }
+    .btn-secondary:hover {
+        background-color: #F1F5F9; /* Slate-100 */
+        border-color: #CBD5E1; /* Slate-300 */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+    
+    .btn-danger {
+        background-color: #ef4444; /* Rojo de Tailwind (Red-500) */
+        color: white;
+    }
+
+    /* --- SISTEMA DE GRULLA Y RESPONSIVIDAD (Ajustes de Media Queries) --- */
+
+    /* Sistema de Grilla Básico */
+    .grid-3-cols {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .grid-4-cols {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .grid-2-cols {
+        display: grid;
+        grid-template-columns: 1fr; 
+        gap: 20px;
+    }
+    
+    /* --- MENSAJES DE ESTADO --- */
+
+    #message {
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: var(--border-radius-m);
+        font-weight: 500;
+        display: none;
+        border: 1px solid transparent;
+        transition: opacity 0.3s;
+    }
+
+    #message.message-success {
+        color: #059669; 
+        background-color: #D1FAE5; 
+        border-color: #A7F3D0; 
+    }
+
+    #message.message-danger {
+        color: #B91C1C; 
+        background-color: #FEE2E2; 
+        border-color: #FCA5A5; 
+    }
+
+    #message.message-info {
+        color: #2563EB; 
+        background-color: #DBEAFE; 
+        border-color: #93C5FD; 
+    }
+
+    /* --- NAVEGACIÓN POR PESTAÑAS (TABS) --- */
+
+    .tab-navigation {
+        display: flex;
+        border-bottom: 2px solid var(--color-border);
+        margin-bottom: 30px;
+        overflow-x: auto; 
+        white-space: nowrap;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch; 
+    }
+
+    .tab-link {
+        padding: 10px 20px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        font-size: 1em;
+        font-weight: 600; /* Un poco más audaz */
+        color: var(--color-text-light);
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px; 
+        transition: color 0.3s, border-bottom-color 0.3s;
+    }
+
+    .tab-link:hover:not(.active) {
+        color: var(--color-text);
+    }
+
+    .tab-link.active {
+        color: var(--color-primary);
+        border-bottom-color: var(--color-primary);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Contenedor de acciones del formulario */
+    .form-actions {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    /* Botones flexibles: se expanden proporcionalmente y se alinean en fila */
+    .form-actions button {
+        flex-grow: 1;
+        margin-top: 0; /* Elimina márgenes individuales para usar el gap del flex */
+    }
+
+    /* --- DARK MODE OVERRIDES (Ajustes finos para el modo oscuro) --- */
+
+    body.dark-mode.app-active {
+        color: var(--dm-color-text);
+    }
+
+    body.dark-mode .container, body.dark-mode.app-active .container {
+        background-color: var(--dm-container-bg);
+        border-color: var(--dm-color-border);
+        box-shadow: var(--shadow-medium);
+    }
+
+    body.dark-mode .header-container {
+        border-bottom-color: var(--dm-color-border);
+    }
+
+    body.dark-mode h1 {
+        color: var(--dm-color-primary);
+    }
+
+    body.dark-mode #datetime-display {
+        color: var(--dm-color-text);
+        background-color: var(--dm-color-surface);
+        border-color: var(--dm-color-border);
+    }
+
+    body.dark-mode .form-section {
+        background-color: var(--dm-color-surface);
+        border-color: var(--dm-color-border);
+        box-shadow: none; /* Elimina la sombra para un estilo más plano en DM */
+    }
+
+    body.dark-mode .form-section:focus-within {
+        border-color: var(--dm-color-primary);
+        box-shadow: 0 0 0 4px var(--dm-color-focus-ring);
+    }
+
+    body.dark-mode h2 {
+        color: var(--dm-color-primary);
+        border-bottom-color: var(--dm-color-border);
+    }
+    body.dark-mode h3 {
+        color: var(--dm-color-text);
+        border-bottom-color: var(--dm-color-border);
+    }
+
+    body.dark-mode label {
+        color: var(--dm-color-text-light);
+    }
+    body.dark-mode .form-group p {
+        color: var(--dm-color-primary);
+    }
+
+    body.dark-mode input[type="text"],
+    body.dark-mode input[type="password"],
+    body.dark-mode input[type="number"],
+    body.dark-mode select,
+    body.dark-mode textarea {
+        background-color: var(--dm-color-surface);
+        border-color: var(--dm-color-border);
+        color: var(--dm-color-text);
+        box-shadow: none;
+    }
+
+    body.dark-mode input[type="text"]:focus,
+    body.dark-mode input[type="password"]:focus,
+    body.dark-mode input[type="number"]:focus,
+    body.dark-mode select:focus,
+    body.dark-mode textarea:focus {
+        border-color: var(--dm-color-primary);
+        box-shadow: 0 0 0 4px var(--dm-color-focus-ring);
+    }
+
+    body.dark-mode .btn-primary { background-color: var(--dm-color-primary); }
+    body.dark-mode .btn-primary:hover { background-color: var(--dm-color-primary-hover); }
+
+    body.dark-mode .btn-secondary { 
+        background-color: var(--dm-color-surface);
+        color: var(--dm-color-text);
+        border-color: var(--dm-color-border);
+    }
+    body.dark-mode .btn-secondary:hover {
+        background-color: #334155; /* Slate-700 */
+        color: var(--dm-color-text);
+        border-color: #475569; /* Slate-600 */
+    }
+    
+    body.dark-mode .btn-danger {
+        background-color: #991b1b; /* Red-800 Darker */
+        color: #FEE2E2; /* Red-100 Lighter Text */
+    }
+    body.dark-mode .btn-danger:hover {
+        background-color: #7f1d1d; /* Red-900 */
+    }
+
+    body.dark-mode #message.message-success { color: #A7F3D0; background-color: #10B981; border-color: #059669; }
+    body.dark-mode #message.message-danger { color: #FEE2E2; background-color: #EF4444; border-color: #B91C1C; }
+    body.dark-mode #message.message-info { color: #BFDBFE; background-color: #3B82F6; border-color: #2563EB; }
+
+    body.dark-mode .tab-navigation { border-bottom-color: var(--dm-color-border); }
+    body.dark-mode .tab-link { color: var(--dm-color-text-light); }
+    body.dark-mode .tab-link.active { color: var(--dm-color-primary); border-bottom-color: var(--dm-color-primary); }
+
+
+    /* --- MEDIA QUERIES (Se mantienen, pero con ajustes) --- */
+
+    @media (max-width: 767px) {
+        #main-content {
+            padding: 10px; /* Menos padding externo para aprovechar la pantalla */
         }
 
-        body {
-            font-family: var(--font-family);
-            background-color: var(--color-background);
-            background: linear-gradient(to bottom, #1e3a8a, #93c5fd); /* Degradado de azul oscuro a claro */
-            padding: 30px 20px;
-            display: flex;
-            justify-content: center;
-            margin: 0;
-        }
-        body, .form-section, input, select, textarea, .tab-link { transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-
-        .container {
-            background-color: #EBF8FF; /* Azul muy claro para el contenedor principal */
-            padding: 40px;
-            border-radius: var(--border-radius-l);
-            box-shadow: var(--shadow-medium);
-            width: 100%;
-            max-width: 1100px; /* Ancho máximo para el formulario */
-        }
-
-        /* Contenedor para elementos del encabezado (título y fecha/hora) */
-        .header-container {
-            display: flex;
-            flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--color-border);
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-            font-weight: 600;
-            text-align: center; /* Centrar el título principal */
-            font-size: 1.8em;
-            flex-grow: 1; /* Permite que el título se centre correctamente */
-            border-bottom: none; /* Quitar el borde individual */
-            margin-bottom: 0; /* Quitar el margen individual */
-        }
-
-        #datetime-display {
-            font-weight: 600; /* Más audaz */
-            color: var(--color-text); /* Color de texto principal */
-            font-size: 1.2em; /* Más grande */
-            white-space: nowrap; /* Evita que la fecha y hora se partan */
-            background-color: var(--color-surface); /* Fondo sutil */
-            padding: 8px 12px;
-            border-radius: var(--border-radius-m);
-            border: 1px solid var(--color-border);
-        }
-
-        /* Estilos para el botón de cambio de tema y sus iconos SVG */
-        #theme-toggle {
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-border);
-            color: var(--color-text-light);
-        }
-        #theme-toggle:hover {
-            background-color: var(--color-border);
-        }
-        #theme-toggle svg { width: 20px; height: 20px; fill: currentColor; }
-        .moon-icon { display: none; }
-        body.dark-mode .sun-icon { display: none; }
-        body.dark-mode .moon-icon { display: block; }
-        body.dark-mode #theme-toggle { background-color: var(--dm-color-surface); border-color: var(--dm-color-border); color: var(--dm-color-text-light); }
-        body.dark-mode #theme-toggle:hover { background-color: var(--dm-color-border); }
-
-        /* Contenedor de Sección del Formulario (Tarjeta) */
-        .form-section {
-            background-color: var(--color-surface);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: var(--border-radius-m);
-            border: 1px solid var(--color-border);
-            transition: box-shadow 0.2s, border-color 0.2s;
-        }
-
-        .form-section:focus-within {
-             /* Efecto Hover/Focus sutil (Elevación) */
-            box-shadow: var(--shadow-medium);
-            border-color: var(--color-primary);
-        }
-
-        h2 {
-            font-size: 1.4em;
-            color: var(--color-primary);
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        /* Estilo para los campos de entrada */
-        .form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-weight: 500;
-            margin-bottom: 5px;
-            color: var(--color-text-light);
-            font-size: 0.95em;
-        }
-
-        input[type="text"], input[type="number"], select, textarea {
-            padding: 10px 12px;
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-m);
-            font-size: 1em;
-            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
-            background-color: var(--color-surface);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
-            border-color: var(--color-primary);
-            outline: none;
-            box-shadow: 0 0 0 3px var(--color-focus-ring);
-        }
-
-        /* Estilo del botón (similar al de Windows) */
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: var(--border-radius-m);
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s, box-shadow 0.2s;
-            margin-top: 20px;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--color-primary-hover);
-        }
-
-        .btn-primary:active {
-            background-color: var(--color-primary);
-        }
-
-        /* Estilos para el layout de columnas (Sistema de Grilla Básico) */
-        .grid-3-cols {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-4-cols {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .grid-2-cols {
-            display: grid;
-            grid-template-columns: 1fr; /* Base para móvil */
-            gap: 20px;
-        }
-
-        /* Estilo para el área de mensaje de guardado */
-        #message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: var(--border-radius-m);
-            color: #004578;
-            background-color: #EBF4F9;
-            border: 1px solid #BFE4F5;
-            display: none; /* Oculto por defecto */
-        }
-
-        /* Estilos para botones adicionales */
-        .btn-secondary {
-            background-color: #6B7280; /* Gris neutro */
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: var(--border-radius-m);
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background-color: #4B5563;
-        }
-
-        .btn-danger {
-            background-color: #EF4444; /* Rojo de advertencia */
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: var(--border-radius-m);
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-danger:hover {
-            background-color: #DC2626;
-        }
-
-        /* Estilos para tipos de mensaje */
-        #message.message-success {
-            color: #047857; /* Green text */
-            background-color: #D1FAE5; /* Light green background */
-            border-color: #6EE7B7; /* Green border */
-        }
-
-        #message.message-danger {
-            color: #B91C1C; /* Red text */
-            background-color: #FEE2E2; /* Light red background */
-            border-color: #FCA5A5; /* Red border */
-        }
-
-        #message.message-info {
-            color: #1E40AF; /* Blue text */
-            background-color: #DBEAFE; /* Light blue background */
-            border-color: #93C5FD; /* Blue border */
-        }
-
-        /* Estilos para la navegación por pestañas */
-        .tab-navigation {
-            display: flex;
-            border-bottom: 2px solid var(--color-border);
-            margin-bottom: 30px;
-        }
-
-        .tab-link {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: none;
-            background-color: transparent;
-            font-size: 1em;
-            font-weight: 500;
-            color: var(--color-text-light);
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px; /* Alinea con el borde inferior del contenedor */
-        }
-
-        .tab-link.active {
-            color: var(--color-primary);
-            border-bottom-color: var(--color-primary);
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-    </style>
-    <style>
-        /* Dark Mode Overrides */
-        body.dark-mode {
-            background: linear-gradient(to bottom, #0a111f, #2c5282); /* Degradado más oscuro */
-            color: var(--dm-color-text);
-        }
-
-        body.dark-mode .container {
-            background-color: var(--dm-container-bg);
-        }
-
-        body.dark-mode .header-container {
-            border-bottom-color: var(--dm-color-border);
-        }
-
-        body.dark-mode h1 {
-            color: var(--dm-color-text);
-        }
-
-        body.dark-mode #datetime-display {
-            color: var(--dm-color-text);
-            background-color: var(--dm-color-surface);
-            border-color: var(--dm-color-border);
-        }
-
-        body.dark-mode .form-section {
-            background-color: var(--dm-color-surface);
-            border-color: var(--dm-color-border);
-        }
-
-        body.dark-mode .form-section:focus-within {
-            border-color: var(--dm-color-primary);
-            box-shadow: 0 0 0 3px var(--dm-color-focus-ring);
-        }
-
-        body.dark-mode h2 {
-            color: var(--dm-color-primary);
-        }
-
-        body.dark-mode label {
-            color: var(--dm-color-text-light);
-        }
-
-        body.dark-mode input[type="text"],
-        body.dark-mode input[type="number"],
-        body.dark-mode select,
-        body.dark-mode textarea {
-            background-color: var(--dm-color-surface);
-            border-color: var(--dm-color-border);
-            color: var(--dm-color-text);
-        }
-
-        body.dark-mode input[type="text"]:focus,
-        body.dark-mode input[type="number"]:focus,
-        body.dark-mode select:focus,
-        body.dark-mode textarea:focus {
-            border-color: var(--dm-color-primary);
-            box-shadow: 0 0 0 3px var(--dm-color-focus-ring);
-        }
-
-        body.dark-mode .btn-primary { background-color: var(--dm-color-primary); }
-        body.dark-mode .btn-primary:hover { background-color: var(--dm-color-primary-hover); }
-        body.dark-mode .btn-primary:active { background-color: var(--dm-color-primary); }
-
-        body.dark-mode .btn-secondary { background-color: #4A5568; color: var(--dm-color-text); }
-        body.dark-mode .btn-secondary:hover { background-color: #2D3748; }
-
-        body.dark-mode .btn-danger { background-color: #E53E3E; }
-        body.dark-mode .btn-danger:hover { background-color: #C53030; }
-
-        body.dark-mode #message.message-success { color: #68D391; background-color: #2F855A; border-color: #48BB78; }
-        body.dark-mode #message.message-danger { color: #FC8181; background-color: #C53030; border-color: #E53E3E; }
-        body.dark-mode #message.message-info { color: #90CDF4; background-color: #3182CE; border-color: #4299E1; }
-
-        body.dark-mode .tab-navigation { border-bottom-color: var(--dm-color-border); }
-        body.dark-mode .tab-link { color: var(--dm-color-text-light); }
-        body.dark-mode .tab-link.active { color: var(--dm-color-primary); border-bottom-color: var(--dm-color-primary); }
-    </style>
-    <style>
-
-        /* --- Base (Móvil) --- */
         .header-container {
             flex-direction: column; 
             gap: 15px;
+            align-items: stretch;
             text-align: center;
         }
 
+        .header-container h1 {
+            text-align: center;
+            font-size: 1.6em; /* Ajuste de tamaño de fuente para móviles */
+        }
+
         .header-container > div {
+            display: flex;
+            flex-direction: column;
             align-items: center; 
+            gap: 10px;
+            width: 100%;
         }
-
-        .tab-navigation {
-            overflow-x: auto; 
-            white-space: nowrap;
-        }
-
-        .grid-3-cols, .grid-4-cols {
-            grid-template-columns: 1fr; /* Una sola columna en móviles */
-        }
-
-        .grid-2-cols {
-            grid-template-columns: 1fr; /* Una sola columna en móviles */
-        }
-
-        .form-actions {
-            flex-direction: column; /* Apila los botones de acción */
-            gap: 15px;
+        
+        .tab-link {
+            font-size: 0.9em; 
+            padding: 10px 12px;
         }
 
         .container {
-            padding: 20px; /* Menos padding en móviles */
+            padding: 20px 15px;
+            border-radius: 12px; /* Bordes más suaves en móvil */
         }
 
-        /* --- Tablet (min-width: 768px) --- */
-        @media (min-width: 768px) {
-            .header-container {
-                flex-direction: row; /* Vuelve a la fila en tablets */
-            }
-            .grid-2-cols {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .grid-3-cols {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-            .grid-4-cols {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-            .form-actions {
-                flex-direction: row; /* Botones en fila */
+        .form-section {
+            padding: 15px; /* Optimización de espacio interno */
+        }
+
+        /* Las grillas se apilan por debajo de 768px (1 columna) */
+        .grid-3-cols, .grid-4-cols, .grid-2-cols {
+            grid-template-columns: 1fr;
+        }
+
+        /* Ocultar barra de desplazamiento en pestañas para mejor estética */
+        .tab-navigation::-webkit-scrollbar {
+            display: none;
+        }
+    }
+    
+    /* Tablet y Escritorio (min-width: 768px) */
+    @media (min-width: 768px) {
+        .header-container {
+            flex-direction: row;
+            align-items: center;
+        }
+        .header-container h1 {
+            text-align: left;
+        }
+        .header-container > div {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .grid-2-cols { grid-template-columns: repeat(2, 1fr); }
+        .grid-3-cols { grid-template-columns: repeat(3, 1fr); }
+        .grid-4-cols { grid-template-columns: repeat(4, 1fr); }
+    }
+        body.login-active {
+            font-family: 'Poppins', sans-serif;
+            background-color: #000428;
+            background-image: 
+                radial-gradient(ellipse at 70% 30%, rgba(192, 38, 211, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(255, 107, 1, 0.3) 0%, transparent 50%),
+                linear-gradient(to right, #000428, #004e92);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars, .stars2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 0;
+        }
+        .stars {
+            background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="15" cy="15" r="1" fill="white"/><circle cx="35" cy="45" r="1" fill="white"/><circle cx="55" cy="75" r="1" fill="white"/><circle cx="75" cy="15" r="1" fill="white"/><circle cx="95" cy="45" r="1" fill="white"/></svg>');
+            animation: animStar 50s linear infinite;
+        }
+        .stars2 {
+            background: transparent url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><circle cx="25" cy="55" r="0.5" fill="white"/><circle cx="45" cy="85" r="0.5" fill="white"/><circle cx="65" cy="25" r="0.5" fill="white"/><circle cx="85" cy="55" r="0.5" fill="white"/><circle cx="105" cy="85" r="0.5" fill="white"/></svg>');
+            animation: animStar 100s linear infinite;
+        }
+        @keyframes animStar {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+
+        #login-container {
+            position: relative;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            padding: 50px 40px;
+            background: rgba(10, 10, 15, 0.15); /* Glassmorphism */
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 15px rgba(192, 38, 211, 0.5), 
+                0 0 30px rgba(192, 38, 211, 0.4),
+                0 0 45px rgba(255, 107, 1, 0.3),
+                inset 0 0 10px rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        #login-container h2 {
+            color: #E5E7EB;
+            font-weight: 500;
+            font-size: 2em;
+            letter-spacing: 2px;
+            margin: 0;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-wrapper .input-field {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #FFF;
+            font-size: 1em;
+            box-sizing: border-box;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+        .input-wrapper .input-field::placeholder { color: #8892b0; }
+        .input-wrapper .input-field:focus { box-shadow: 0 0 10px rgba(255, 107, 1, 0.5), 0 0 15px rgba(192, 38, 211, 0.4); }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #8892b0;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+        .input-wrapper .input-field:focus + .icon { color: #E5E7EB; }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #030712;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #E5E7EB;
+            font-size: 1.1em;
+            font-weight: 500;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+             margin-top: 10px;
+        }
+        .login-btn:hover { background: #111827; box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+
+        #login-error {
+            color: #F87171;
+            background-color: rgba(185, 28, 28, 0.2);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            display: none;
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 420px) {
+            #login-container {
+                width: 90vw;
+                padding: 40px 25px;
             }
         }
     </style>
 </head>
 <body>
 
-<script>
-    // Función para verificar la autenticación del usuario.
-    function checkAuth() {
-        // Si el indicador 'isAuthenticated' no es 'true', redirige al login.
-        // Se usa location.replace para que la página actual no se guarde en el historial de sesión,
-        // impidiendo que el usuario pueda volver con el botón "Atrás".
-        if (sessionStorage.getItem('isAuthenticated') !== 'true') {
-            window.location.replace('login.html');
-        }
-    }
-
-    // Ejecutar la verificación al cargar la página por primera vez.
-    checkAuth();
-
-    // Añadir un listener al evento 'pageshow'.
-    // Esto asegura que la verificación se ejecute también cuando el usuario navega
-    // hacia atrás desde el caché del navegador (bfcache).
-    window.addEventListener('pageshow', (event) => {
-        // La propiedad 'persisted' es true si la página se carga desde el caché.
-        if (event.persisted) {
-            checkAuth();
-        }
-    });
-</script>
-
-    <div class="container">
-        <div class="header-container">
-            <h1>DATOS ORA/ORAPC - SALA SITUACIONAL</h1>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
-                <div id="datetime-display"></div>
-                <button type="button" id="theme-toggle" class="btn-secondary" style="margin-top: 0; padding: 8px 12px;">
-                    <!-- Icono de Luna (para cambiar a modo oscuro) -->
-                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13.14C20.97,13.14 20.3,13.42 19.84,13.88C19.38,14.34 19.1,15.01 19.1,15.68C19.1,17.58 20.58,19.06 22.48,19.06C22.86,19.06 23.24,19 23.58,18.88C22.91,21.41 20.56,23.25 17.75,23.25C13.5,23.25 10,19.75 10,15.5C10,11.25 13.5,7.75 17.75,7.75C20.56,7.75 22.91,9.59 23.58,12.12C23.24,12 22.86,11.94 22.48,11.94C22.02,11.94 21.56,12.06 21.1,12.28C21.44,12.52 21.64,12.82 21.64,13.14Z"></path></svg>
-                    <!-- Icono de Sol (para cambiar a modo claro) -->
-                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,7C9.24,7 7,9.24 7,12C7,14.76 9.24,17 12,17C14.76,17 17,14.76 17,12C17,9.24 14.76,7 12,7ZM12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15ZM12,2L12,4C16.42,4 20,7.58 20,12C20,16.42 16.42,20 12,20C7.58,20 4,16.42 4,12C4,7.58 7.58,4 12,4L12,2ZM12,0C6.48,0 2,4.48 2,10C2,15.52 6.48,20 12,20C17.52,20 22,15.52 22,10C22,4.48 17.52,0 12,0Z"/></svg>
-                </button>
-            </div>
+    <!-- Contenedor del Login -->
+    <div id="login-section">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div id="login-container">
+            <h2>ORA/ORAPC</h2>
+            <form id="loginForm" style="display: contents;">
+                <div class="input-wrapper">
+                    <input type="text" id="username" name="username" class="input-field" placeholder="Usuario" required>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12.5c-3.04 0-5.5 2.46-5.5 5.5v1.5h11v-1.5c0-3.04-2.46-5.5-5.5-5.5zm0-10C9.24 2.5 7 4.74 7 7.5S9.24 12.5 12 12.5s5-2.24 5-5-2.24-5-5-5z"/>
+                    </svg>
+                </div>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" class="input-field" placeholder="Contraseña" required>
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1V8z"/>
+                    </svg>
+                </div>
+                <button type="submit" class="login-btn">INGRESAR</button>
+            </form>
+            <div id="login-error">Usuario o contraseña incorrectos.</div>
         </div>
-        <form id="dataForm">
+    </div>
 
-            <!-- Navegación de Pestañas -->
-            <div class="tab-navigation">
-                <button type="button" class="tab-link active" data-tab="tab-1">Identificación y Poder Popular</button>
-                <button type="button" class="tab-link" data-tab="tab-2">Social y Política</button>
-                <button type="button" class="tab-link" data-tab="tab-3">Infraestructura</button>
-                <button type="button" class="tab-link" data-tab="tab-4">Productivo y Observaciones</button>
-            </div>
-
-            <!-- Contenido de las Pestañas -->
-            <div id="tab-1" class="tab-content active">
-                <div class="form-section">
-                    <h2>1. Identificación Geográfica y Administrativa</h2>
-                    <div class="grid-4-cols">
-                        <div class="form-group">
-                            <label>Número de Registro (Automático)</label>
-                            <p id="registro-automatico" style="font-weight: bold; font-size: 1.1em; color: var(--color-primary); margin-top: 5px;">-</p>
-                        </div>
-                        <div class="form-group"><label for="estado">Estado</label><input type="text" id="estado" name="estado" required></div>
-                        <div class="form-group"><label for="municipio">Municipio</label><input type="text" id="municipio" name="municipio" required></div>
-                        <div class="form-group"><label for="parroquia">Parroquia</label><input type="text" id="parroquia" name="parroquia" required></div>
-                        <div class="form-group"><label for="nombre_orapc">Nombre de la ORAPC</label><input type="text" id="nombre_orapc" name="nombre_orapc"></div>
-                        <div class="form-group"><label for="nombre_comuna">Nombre de la Comuna Registrada</label><input type="text" id="nombre_comuna" name="nombre_comuna"></div>
-                        <div class="form-group"><label for="nombre_circuito">Nombre del Circuito Comunal</label><input type="text" id="nombre_circuito" name="nombre_circuito"></div>
-                        <div class="form-group"><label for="densidad_poblacional">Densidad Poblacional</label><input type="number" id="densidad_poblacional" name="densidad_poblacional" min="0" value="0"></div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2>2. Organización del Poder Popular</h2>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="cant_consejos_comunales">Cant. Consejos Comunales</label><input type="number" id="cant_consejos_comunales" name="cant_consejos_comunales" min="0" value="0"></div>
-                        <div class="form-group"><label for="cant_circuitos_comunales">Cant. Circuitos Comunales</label><input type="number" id="cant_circuitos_comunales" name="cant_circuitos_comunales" min="0" value="0"></div>
-                        <div class="form-group"><label for="cant_salas_autogobierno">Cant. Salas de Autogobierno</label><input type="number" id="cant_salas_autogobierno" name="cant_salas_autogobierno" min="0" value="0"></div>
-                        <div class="form-group"><label for="cant_comunas_registradas">Cant. Comunas Registradas</label><input type="number" id="cant_comunas_registradas" name="cant_comunas_registradas" min="0" value="0"></div>
-                        <div class="form-group"><label for="cant_jueces_paz">Cant. Jueces y Juezas de Paz</label><input type="number" id="cant_jueces_paz" name="cant_jueces_paz" min="0" value="0"></div>
-                        <div class="form-group"><label for="otros_poder_popular">Otros que se Tengan</label><input type="text" id="otros_poder_popular" name="otros_poder_popular"></div>
-                    </div>
-
-                    <h3>Datos de los Responsables de Sala de Autogobierno</h3>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="resp_nombre">Nombre y Apellido</label><input type="text" id="resp_nombre" name="resp_nombre"></div>
-                        <div class="form-group"><label for="resp_cedula">Cédula</label><input type="text" id="resp_cedula" name="resp_cedula"></div>
-                        <div class="form-group"><label for="resp_telefono">Teléfono</label><input type="text" id="resp_telefono" name="resp_telefono"></div>
-                    </div>
-
-                    <h3>Comités de Base y Estructuras Comunitarias</h3>
-                    <div class="grid-4-cols">
-                        <div class="form-group"><label for="comites_salud">Comités de Salud</label><input type="number" id="comites_salud" name="comites_salud" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_tierra">Comités de Tierra Urbana</label><input type="number" id="comites_tierra" name="comites_tierra" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_campo_semilla">Comité de Campo/Semilla</label><input type="number" id="comites_campo_semilla" name="comites_campo_semilla" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_campesino_pescador">Comité Campesino/Pescador</label><input type="number" id="comites_campesino_pescador" name="comites_campesino_pescador" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_barrios">Comités de Barrios</label><input type="number" id="comites_barrios" name="comites_barrios" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_indigenas">Comités Indígenas</label><input type="number" id="comites_indigenas" name="comites_indigenas" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_afro">Comités de Afrodescendientes</label><input type="number" id="comites_afro" name="comites_afro" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_mujeres">Comité de Mujeres</label><input type="number" id="comites_mujeres" name="comites_mujeres" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_juventud">Comité de la Juventud</label><input type="number" id="comites_juventud" name="comites_juventud" min="0" value="0"></div>
-                        <div class="form-group"><label for="comites_justicia_paz">Comité de Justicia de Paz Comunal</label><input type="number" id="comites_justicia_paz" name="comites_justicia_paz" min="0" value="0"></div>
-                    </div>
-                    <div class="form-group"><label for="otros_comites">Otros Comités en el Punto y Círculo</label><input type="text" id="otros_comites" name="otros_comites"></div>
+    <!-- Contenedor de la Aplicación Principal -->
+    <div id="main-content" style="display: none;">
+        <div class="container">
+            <div class="header-container">
+                <h1>DATOS ORA/ORAPC - SALA SITUACIONAL</h1>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                    <div id="datetime-display"></div>
+                    <button type="button" id="theme-toggle" class="btn-secondary" style="margin-top: 0; padding: 8px 12px;">
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13.14C20.97,13.14 20.3,13.42 19.84,13.88C19.38,14.34 19.1,15.01 19.1,15.68C19.1,17.58 20.58,19.06 22.48,19.06C22.86,19.06 23.24,19 23.58,18.88C22.91,21.41 20.56,23.25 17.75,23.25C13.5,23.25 10,19.75 10,15.5C10,11.25 13.5,7.75 17.75,7.75C20.56,7.75 22.91,9.59 23.58,12.12C23.24,12 22.86,11.94 22.48,11.94C22.02,11.94 21.56,12.06 21.1,12.28C21.44,12.52 21.64,12.82 21.64,13.14Z"></path></svg>
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,7C9.24,7 7,9.24 7,12C7,14.76 9.24,17 12,17C14.76,17 17,14.76 17,12C17,9.24 14.76,7 12,7ZM12,15C10.34,15 9,13.66 9,12C9,10.34 10.34,9 12,9C13.66,9 15,10.34 15,12C15,13.66 13.66,15 12,15ZM12,2L12,4C16.42,4 20,7.58 20,12C20,16.42 16.42,20 12,20C7.58,20 4,16.42 4,12C4,7.58 7.58,4 12,4L12,2ZM12,0C6.48,0 2,4.48 2,10C2,15.52 6.48,20 12,20C17.52,20 22,15.52 22,10C22,4.48 17.52,0 12,0Z"/></svg>
+                    </button>
                 </div>
             </div>
-
-            <div id="tab-2" class="tab-content">
-                <div class="form-section">
-                    <h2>3. Misiones y Grandes Misiones Socialistas</h2>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="misiones_bases">Bases de Misiones Socialistas</label><input type="number" id="misiones_bases" name="misiones_bases" min="0" value="0"></div>
-                        <div class="form-group"><label for="misiones_gmvv">Urbanismos de la GMVV</label><input type="number" id="misiones_gmvv" name="misiones_gmvv" min="0" value="0"></div>
-                        <div class="form-group"><label for="misiones_casas_alimentacion">Casas de Alimentación</label><input type="number" id="misiones_casas_alimentacion" name="misiones_casas_alimentacion" min="0" value="0"></div>
-                        <div class="form-group"><label for="misiones_cocineras">Cocineras de la Patria</label><input type="number" id="misiones_cocineras" name="misiones_cocineras" min="0" value="0"></div>
-                        <div class="form-group"><label for="misiones_hogares_patria">Comités de Hogares de la Patria</label><input type="number" id="misiones_hogares_patria" name="misiones_hogares_patria" min="0" value="0"></div>
-                        <div class="form-group"><label for="misiones_multifamiliar">Comité Multifamiliar</label><input type="number" id="misiones_multifamiliar" name="misiones_multifamiliar" min="0" value="0"></div>
-                    </div>
-                    <div class="form-group"><label for="misiones_otros">Otros que se tengan en su territorio</label><input type="text" id="misiones_otros" name="misiones_otros"></div>
+            <form id="dataForm">
+                <-- Navegación de Pestañas -->
+                <div class="tab-navigation">
+                    <button type="button" class="tab-link active" data-tab="tab-1">Identificación y Poder Popular</button>
+                    <button type="button" class="tab-link" data-tab="tab-2">Social y Política</button>
+                    <button type="button" class="tab-link" data-tab="tab-3">Infraestructura</button>
+                    <button type="button" class="tab-link" data-tab="tab-4">Productivo y Observaciones</button>
                 </div>
 
-                <div class="form-section">
-                    <h2>4. Política</h2>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="politica_ubch">Cantidad de UBCH</label><input type="number" id="politica_ubch" name="politica_ubch" min="0" value="0"></div>
-                        <div class="form-group"><label for="politica_jefes_psuv">Jefes de Comunidades del PSUV</label><input type="number" id="politica_jefes_psuv" name="politica_jefes_psuv" min="0" value="0"></div>
-                        <div class="form-group"><label for="politica_jpsuv">JPSUV</label><input type="number" id="politica_jpsuv" name="politica_jpsuv" min="0" value="0"></div>
-                    </div>
-                    <h3>GPPSB</h3>
-                    <div class="grid-4-cols"></div>
-
-                    <div class="form-group"><label for="politica_otros">Otros que se Tengan en el Territorio</label><input type="text" id="politica_otros" name="politica_otros"></div>
-                </div>
-            </div>
-
-            <div id="tab-3" class="tab-content">
-                <div class="form-section">
-                    <h2>5. Instituciones</h2>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="inst_alcaldia">Alcaldía</label><select id="inst_alcaldia" name="inst_alcaldia"><option value="">Seleccionar...</option><option value="Oficialista">Oficialista</option><option value="Opositora">Opositora</option></select></div>
-                        <div class="form-group"><label for="inst_gobernacion">Gobernación</label><select id="inst_gobernacion" name="inst_gobernacion"><option value="">Seleccionar...</option><option value="Oficialista">Oficialista</option><option value="Opositora">Opositora</option></select></div>
-                        <div class="form-group"><label for="inst_consejo_municipal">Consejo Municipal</label><input type="text" id="inst_consejo_municipal" name="inst_consejo_municipal"></div>
-                    </div>
-                    <div class="form-group"><label for="inst_publicas">Nombre de Instituciones Públicas</label><textarea id="inst_publicas" name="inst_publicas" rows="2"></textarea></div>
-                    <div class="form-group"><label for="inst_privadas">Nombre de Instituciones Privadas</label><textarea id="inst_privadas" name="inst_privadas" rows="2"></textarea></div>
-                    <div class="form-group"><label for="inst_bancos_publicos">Nombre de Bancos Públicos</label><input type="text" id="inst_bancos_publicos" name="inst_bancos_publicos"></div>
-                    <div class="form-group"><label for="inst_bancos_privados">Nombre de Bancos Privados</label><input type="text" id="inst_bancos_privados" name="inst_bancos_privados"></div>
-                    <div class="form-group"><label for="inst_otras">Otras Instituciones a Mencionar</label><input type="text" id="inst_otras" name="inst_otras"></div>
-                </div>
-
-                <div class="form-section">
-                    <h2>6. Educación 🎓</h2>
-                    <div class="grid-4-cols">
-                        <div class="form-group"><label for="edu_simoncitos">Espacios Simonsitos</label><input type="number" id="edu_simoncitos" name="edu_simoncitos" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_preescolar_pub">Preescolares Públicos</label><input type="number" id="edu_preescolar_pub" name="edu_preescolar_pub" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_preescolar_priv">Preescolares Privados</label><input type="number" id="edu_preescolar_priv" name="edu_preescolar_priv" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_escuelas_pub">Escuelas Públicas</label><input type="number" id="edu_escuelas_pub" name="edu_escuelas_pub" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_escuelas_priv">Escuelas Privadas</label><input type="number" id="edu_escuelas_priv" name="edu_escuelas_priv" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_liceos_pub">Liceos Públicos</label><input type="number" id="edu_liceos_pub" name="edu_liceos_pub" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_liceos_priv">Liceos Privados</label><input type="number" id="edu_liceos_priv" name="edu_liceos_priv" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_univ_pub">Universidades Públicas</label><input type="number" id="edu_univ_pub" name="edu_univ_pub" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_univ_priv">Universidades Privadas</label><input type="number" id="edu_univ_priv" name="edu_univ_priv" min="0" value="0"></div>
-                        <div class="form-group"><label for="edu_proteccion_nna">Consejos de Protección NNA</label><input type="number" id="edu_proteccion_nna" name="edu_proteccion_nna" min="0" value="0"></div>
-                    </div>
-                    <div class="form-group"><label for="edu_otras">Otras</label><input type="text" id="edu_otras" name="edu_otras"></div>
-                </div>
-
-                <div class="form-section">
-                    <h2>7. Salud ⚕️</h2>
-                    <div class="grid-4-cols">
-                        <div class="form-group"><label for="salud_barrio_adentro">Módulo Barrio Adentro T1</label><input type="number" id="salud_barrio_adentro" name="salud_barrio_adentro" min="0" value="0"></div>
-                        <div class="form-group"><label for="salud_cdi">CDI</label><input type="number" id="salud_cdi" name="salud_cdi" min="0" value="0"></div>
-                        <div class="form-group"><label for="salud_cat">CAT</label><input type="number" id="salud_cat" name="salud_cat" min="0" value="0"></div>
-                        <div class="form-group"><label for="salud_ambulatorios">Ambulatorios</label><input type="number" id="salud_ambulatorios" name="salud_ambulatorios" min="0" value="0"></div>
-                        <div class="form-group"><label for="salud_clinicas_priv">Clínicas Privadas</label><input type="number" id="salud_clinicas_priv" name="salud_clinicas_priv" min="0" value="0"></div>
-                        <div class="form-group"><label for="salud_clinicas_pop">Clínicas Populares</label><input type="number" id="salud_clinicas_pop" name="salud_clinicas_pop" min="0" value="0"></div>
-                    </div>
-                    <div class="form-group"><label for="salud_hospitales">Nombre de Hospitales</label><input type="text" id="salud_hospitales" name="salud_hospitales"></div>
-                </div>
-            </div>
-
-            <div id="tab-4" class="tab-content">
-                <div class="form-section">
-                    <h2>8. Productivos</h2>
-                    <div class="grid-3-cols">
-                        <div class="form-group"><label for="prod_emprendedores">Cant. de Emprendedores</label><input type="number" id="prod_emprendedores" name="prod_emprendedores" min="0" value="0"></div>
-                        <div class="form-group"><label for="prod_panaderias">Panaderías Comunales</label><input type="number" id="prod_panaderias" name="prod_panaderias" min="0" value="0"></div>
-                        <div class="form-group"><label for="prod_mercados">Mercados Municipales</label><input type="number" id="prod_mercados" name="prod_mercados" min="0" value="0"></div>
-                        <div class="form-group">
-                            <label for="prod_activo">¿Se encuentra activo su emprendimiento?</label>
-                            <select id="prod_activo" name="prod_activo"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="prod_registrado">¿Se encuentra registrado su emprendimiento?</label>
-                            <select id="prod_registrado" name="prod_registrado"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="prod_financiamiento">¿Usted ha recibido algún tipo de financiamiento?</label>
-                            <select id="prod_financiamiento" name="prod_financiamiento"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
+                <-- Contenido de las Pestañas -->
+                <div id="tab-1" class="tab-content active">
+                    <div class="form-section">
+                        <h2>1. Identificación Geográfica y Administrativa</h2>
+                        <div class="grid-4-cols">
+                            <div class="form-group">
+                                <label>Número de Registro (Automático)</label>
+                                <p id="registro-automatico" style="font-weight: bold; font-size: 1.1em; color: var(--color-primary); margin-top: 5px;">-</p>
+                            </div>
+                            <div class="form-group"><label for="estado">Estado</label><input type="text" id="estado" name="estado" required></div>
+                            <div class="form-group"><label for="municipio">Municipio</label><input type="text" id="municipio" name="municipio" required></div>
+                            <div class="form-group"><label for="parroquia">Parroquia</label><input type="text" id="parroquia" name="parroquia" required></div>
+                            <div class="form-group"><label for="nombre_orapc">Nombre de la ORAPC</label><input type="text" id="nombre_orapc" name="nombre_orapc"></div>
+                            <div class="form-group"><label for="nombre_comuna">Nombre de la Comuna Registrada</label><input type="text" id="nombre_comuna" name="nombre_comuna"></div>
+                            <div class="form-group"><label for="nombre_circuito">Nombre del Circuito Comunal</label><input type="text" id="nombre_circuito" name="nombre_circuito"></div>
+                            <div class="form-group"><label for="densidad_poblacional">Densidad Poblacional</label><input type="number" id="densidad_poblacional" name="densidad_poblacional" min="0" value="0"></div>
                         </div>
                     </div>
-                    <div class="grid-2-cols">
-                        <div class="form-group"><label for="prod_tipo_emprendimiento">Tipo de emprendimiento, especifique</label><textarea id="prod_tipo_emprendimiento" name="prod_tipo_emprendimiento" rows="4"></textarea></div>
-                        <div class="form-group"><label for="prod_rutas_turisticas">Rutas Turísticas en el Punto y Círculo</label><input type="text" id="prod_rutas_turisticas" name="prod_rutas_turisticas"></div>
+
+                    <div class="form-section">
+                        <h2>2. Organización del Poder Popular</h2>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="cant_consejos_comunales">Cant. Consejos Comunales</label><input type="number" id="cant_consejos_comunales" name="cant_consejos_comunales" min="0" value="0"></div>
+                            <div class="form-group"><label for="cant_circuitos_comunales">Cant. Circuitos Comunales</label><input type="number" id="cant_circuitos_comunales" name="cant_circuitos_comunales" min="0" value="0"></div>
+                            <div class="form-group"><label for="cant_salas_autogobierno">Cant. Salas de Autogobierno</label><input type="number" id="cant_salas_autogobierno" name="cant_salas_autogobierno" min="0" value="0"></div>
+                            <div class="form-group"><label for="cant_comunas_registradas">Cant. Comunas Registradas</label><input type="number" id="cant_comunas_registradas" name="cant_comunas_registradas" min="0" value="0"></div>
+                            <div class="form-group"><label for="cant_jueces_paz">Cant. Jueces y Juezas de Paz</label><input type="number" id="cant_jueces_paz" name="cant_jueces_paz" min="0" value="0"></div>
+                            <div class="form-group"><label for="otros_poder_popular">Otros que se Tengan</label><input type="text" id="otros_poder_popular" name="otros_poder_popular"></div>
+                        </div>
+
+                        <h3>Datos de los Responsables de Sala de Autogobierno</h3>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="resp_nombre">Nombre y Apellido</label><input type="text" id="resp_nombre" name="resp_nombre"></div>
+                            <div class="form-group"><label for="resp_cedula">Cédula</label><input type="text" id="resp_cedula" name="resp_cedula"></div>
+                            <div class="form-group"><label for="resp_telefono">Teléfono</label><input type="text" id="resp_telefono" name="resp_telefono"></div>
+                        </div>
+
+                        <h3>Comités de Base y Estructuras Comunitarias</h3>
+                        <div class="grid-4-cols">
+                            <div class="form-group"><label for="comites_salud">Comités de Salud</label><input type="number" id="comites_salud" name="comites_salud" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_tierra">Comités de Tierra Urbana</label><input type="number" id="comites_tierra" name="comites_tierra" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_campo_semilla">Comité de Campo/Semilla</label><input type="number" id="comites_campo_semilla" name="comites_campo_semilla" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_campesino_pescador">Comité Campesino/Pescador</label><input type="number" id="comites_campesino_pescador" name="comites_campesino_pescador" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_barrios">Comités de Barrios</label><input type="number" id="comites_barrios" name="comites_barrios" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_indigenas">Comités Indígenas</label><input type="number" id="comites_indigenas" name="comites_indigenas" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_afro">Comités de Afrodescendientes</label><input type="number" id="comites_afro" name="comites_afro" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_mujeres">Comité de Mujeres</label><input type="number" id="comites_mujeres" name="comites_mujeres" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_juventud">Comité de la Juventud</label><input type="number" id="comites_juventud" name="comites_juventud" min="0" value="0"></div>
+                            <div class="form-group"><label for="comites_justicia_paz">Comité de Justicia de Paz Comunal</label><input type="number" id="comites_justicia_paz" name="comites_justicia_paz" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label for="otros_comites">Otros Comités en el Punto y Círculo</label><input type="text" id="otros_comites" name="otros_comites"></div>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h2>9. Observaciones Generales</h2>
-                    <div class="form-group">
-                        <label for="observaciones">Observaciones Generales</label>
-                        <textarea id="observaciones" name="observaciones" rows="4"></textarea>
+                <div id="tab-2" class="tab-content">
+                    <div class="form-section">
+                        <h2>3. Misiones y Grandes Misiones Socialistas</h2>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="misiones_bases">Bases de Misiones Socialistas</label><input type="number" id="misiones_bases" name="misiones_bases" min="0" value="0"></div>
+                            <div class="form-group"><label for="misiones_gmvv">Urbanismos de la GMVV</label><input type="number" id="misiones_gmvv" name="misiones_gmvv" min="0" value="0"></div>
+                            <div class="form-group"><label for="misiones_casas_alimentacion">Casas de Alimentación</label><input type="number" id="misiones_casas_alimentacion" name="misiones_casas_alimentacion" min="0" value="0"></div>
+                            <div class="form-group"><label for="misiones_cocineras">Cocineras de la Patria</label><input type="number" id="misiones_cocineras" name="misiones_cocineras" min="0" value="0"></div>
+                            <div class="form-group"><label for="misiones_hogares_patria">Comités de Hogares de la Patria</label><input type="number" id="misiones_hogares_patria" name="misiones_hogares_patria" min="0" value="0"></div>
+                            <div class="form-group"><label for="misiones_multifamiliar">Comité Multifamiliar GMVV</label><input type="number" id="misiones_multifamiliar" name="misiones_multifamiliar" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label for="misiones_otros">Otros que se tengan en su territorio</label><input type="text" id="misiones_otros" name="misiones_otros"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>4. Política</h2>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="politica_ubch">Cantidad de UBCH</label><input type="number" id="politica_ubch" name="politica_ubch" min="0" value="0"></div>
+                            <div class="form-group"><label for="politica_jefes_psuv">Jefes de Comunidades del PSUV</label><input type="number" id="politica_jefes_psuv" name="politica_jefes_psuv" min="0" value="0"></div>
+                            <div class="form-group"><label for="politica_jpsuv">JPSUV</label><input type="number" id="politica_jpsuv" name="politica_jpsuv" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label for="politica_otros">Otros que se Tengan en el Territorio</label><input type="text" id="politica_otros" name="politica_otros"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Botones de Acción -->
-            <div class="form-actions">
-                <div id="message"></div>
-                <button type="button" class="btn-secondary" id="logoutBtn">Cerrar Sesión</button>
-                <button type="button" class="btn-danger" id="clearAllBtn">Limpiar Todo el Registro</button>
-                <button type="submit" class="btn-primary">💾 Guardar Registro</button>
-            </div>
-        </form>
+                <div id="tab-3" class="tab-content">
+                    <div class="form-section">
+                        <h2>5. Instituciones</h2>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="inst_alcaldia">Alcaldía</label><select id="inst_alcaldia" name="inst_alcaldia"><option value="">Seleccionar...</option><option value="Oficialista">Oficialista</option><option value="Opositora">Opositora</option></select></div>
+                            <div class="form-group"><label for="inst_gobernacion">Gobernación</label><select id="inst_gobernacion" name="inst_gobernacion"><option value="">Seleccionar...</option><option value="Oficialista">Oficialista</option><option value="Opositora">Opositora</option></select></div>
+                            <div class="form-group"><label for="inst_consejo_municipal">Concejo Municipal</label><input type="text" id="inst_consejo_municipal" name="inst_consejo_municipal"></div>
+                        </div>
+                        <div class="form-group"><label for="inst_publicas">Nombre de Instituciones Públicas</label><textarea id="inst_publicas" name="inst_publicas" rows="2"></textarea></div>
+                        <div class="form-group"><label for="inst_privadas">Nombre de Instituciones Privadas</label><textarea id="inst_privadas" name="inst_privadas" rows="2"></textarea></div>
+                        <div class="form-group"><label for="inst_bancos_publicos">Nombre de Bancos Públicos</label><input type="text" id="inst_bancos_publicos" name="inst_bancos_publicos"></div>
+                        <div class="form-group"><label for="inst_bancos_privados">Nombre de Bancos Privados</label><input type="text" id="inst_bancos_privados" name="inst_bancos_privados"></div>
+                        <div class="form-group"><label for="inst_otras">Otras Instituciones a Mencionar</label><input type="text" id="inst_otras" name="inst_otras"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>6. Educación 🎓</h2>
+                        <div class="grid-4-cols">
+                            <div class="form-group"><label for="edu_simoncitos">Espacios Simonsitos</label><input type="number" id="edu_simoncitos" name="edu_simoncitos" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_preescolar_pub">Preescolares Públicos</label><input type="number" id="edu_preescolar_pub" name="edu_preescolar_pub" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_preescolar_priv">Preescolares Privados</label><input type="number" id="edu_preescolar_priv" name="edu_preescolar_priv" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_escuelas_pub">Escuelas Públicas</label><input type="number" id="edu_escuelas_pub" name="edu_escuelas_pub" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_escuelas_priv">Escuelas Privadas</label><input type="number" id="edu_escuelas_priv" name="edu_escuelas_priv" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_liceos_pub">Liceos Públicos</label><input type="number" id="edu_liceos_pub" name="edu_liceos_pub" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_liceos_priv">Liceos Privados</label><input type="number" id="edu_liceos_priv" name="edu_liceos_priv" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_univ_pub">Universidades Públicas</label><input type="number" id="edu_univ_pub" name="edu_univ_pub" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_univ_priv">Universidades Privadas</label><input type="number" id="edu_univ_priv" name="edu_univ_priv" min="0" value="0"></div>
+                            <div class="form-group"><label for="edu_proteccion_nna">Consejos de Protección NNA</label><input type="number" id="edu_proteccion_nna" name="edu_proteccion_nna" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label for="edu_otras">Otras</label><input type="text" id="edu_otras" name="edu_otras"></div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>7. Salud ⚕️</h2>
+                        <div class="grid-4-cols">
+                            <div class="form-group"><label for="salud_barrio_adentro">Módulo Barrio Adentro T1</label><input type="number" id="salud_barrio_adentro" name="salud_barrio_adentro" min="0" value="0"></div>
+                            <div class="form-group"><label for="salud_cdi">CDI</label><input type="number" id="salud_cdi" name="salud_cdi" min="0" value="0"></div>
+                            <div class="form-group"><label for="salud_cat">CAT</label><input type="number" id="salud_cat" name="salud_cat" min="0" value="0"></div>
+                            <div class="form-group"><label for="salud_ambulatorios">Ambulatorios</label><input type="number" id="salud_ambulatorios" name="salud_ambulatorios" min="0" value="0"></div>
+                            <div class="form-group"><label for="salud_clinicas_priv">Clínicas Privadas</label><input type="number" id="salud_clinicas_priv" name="salud_clinicas_priv" min="0" value="0"></div>
+                            <div class="form-group"><label for="salud_clinicas_pop">Clínicas Populares</label><input type="number" id="salud_clinicas_pop" name="salud_clinicas_pop" min="0" value="0"></div>
+                        </div>
+                        <div class="form-group"><label for="salud_hospitales">Nombre de Hospitales</label><input type="text" id="salud_hospitales" name="salud_hospitales"></div>
+                    </div>
+                </div>
+
+                <div id="tab-4" class="tab-content">
+                    <div class="form-section">
+                        <h2>8. Productivos</h2>
+                        <div class="grid-3-cols">
+                            <div class="form-group"><label for="prod_emprendedores">Cant. de Emprendedores</label><input type="number" id="prod_emprendedores" name="prod_emprendedores" min="0" value="0"></div>
+                            <div class="form-group"><label for="prod_panaderias">Panaderías Comunales</label><input type="number" id="prod_panaderias" name="prod_panaderias" min="0" value="0"></div>
+                            <div class="form-group"><label for="prod_mercados">Mercados Municipales</label><input type="number" id="prod_mercados" name="prod_mercados" min="0" value="0"></div>
+                            <div class="form-group">
+                                <label for="prod_activo">¿Se encuentra activo su emprendimiento?</label>
+                                <select id="prod_activo" name="prod_activo"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prod_registrado">¿Se encuentra registrado su emprendimiento?</label>
+                                <select id="prod_registrado" name="prod_registrado"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prod_financiamiento">¿Usted ha recibido algún tipo de financiamiento?</label>
+                                <select id="prod_financiamiento" name="prod_financiamiento"><option value="">Seleccionar...</option><option value="Si">Sí</option><option value="No">No</option></select>
+                            </div>
+                        </div>
+                        <div class="grid-2-cols">
+                            <div class="form-group"><label for="prod_tipo_emprendimiento">Tipo de emprendimiento, especifique</label><textarea id="prod_tipo_emprendimiento" name="prod_tipo_emprendimiento" rows="4"></textarea></div>
+                            <div class="form-group"><label for="prod_rutas_turisticas">Rutas Turísticas en el Punto y Círculo</label><input type="text" id="prod_rutas_turisticas" name="prod_rutas_turisticas"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2>9. Observaciones Generales</h2>
+                        <div class="form-group">
+                            <label for="observaciones">Observaciones Generales</label>
+                            <textarea id="observaciones" name="observaciones" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <-- Botones de Acción -->
+                <div class="form-actions">
+                    <div id="message" style="width: 100%; order: -1;"></div>
+                    <button type="button" class="btn-secondary" id="logoutBtn">Cerrar Sesión</button>
+                    <button type="button" class="btn-danger" id="clearAllBtn">Limpiar Formulario</button>
+                    <button type="submit" class="btn-primary">💾 Guardar Registro</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
-
-        const form = document.getElementById('dataForm'); // Definir 'form' una vez
+        // =================================================================
+        // 1. LÓGICA DE CONTROL DE PANTALLA (Mostrar/Ocultar Login vs. Form)
+        // =================================================================
+        // --- Selectores de Elementos ---
+        const loginSection = document.getElementById('login-section');
+        const mainContent = document.getElementById('main-content');
         const body = document.body;
+        const loginForm = document.getElementById('loginForm');
+        const dataForm = document.getElementById('dataForm');
 
-        // --- Dark/Light Mode Toggle ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
+        function showContent() {
+            // Verifica el estado guardado en el navegador (sessionStorage)
+            if (sessionStorage.getItem('isAuthenticated') === 'true') {
+                // AUTENTICADO: Muestra el Formulario
+                loginSection.style.display = 'none';
+                mainContent.style.display = 'flex'; // Usamos 'flex' para centrar el contenido principal
+                
+                body.classList.remove('login-active');
+                body.classList.add('app-active');
 
-        // Cargar la preferencia de tema guardada
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
+                // Llama a la función de inicialización del Formulario (datetime, tabs, etc.)
+                initApp();
+                
+            } else {
+                // NO AUTENTICADO: Muestra el Login
+                loginSection.style.display = 'flex'; // Usamos 'flex' para centrar el login
+                mainContent.style.display = 'none';
+                
+                body.classList.remove('app-active');
+                body.classList.add('login-active');
+            }
         }
 
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
+        // Ejecutar la verificación al cargar la página
+        document.addEventListener('DOMContentLoaded', showContent);
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                showContent(); // Re-chequea el estado si se navega hacia atrás/adelante
             }
         });
 
-        // --- Lógica del Formulario ---
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Evita el envío tradicional del formulario
-            const formData = new FormData(form);
-            const n_registro = document.getElementById('registro-automatico').textContent;
-            if (n_registro === '-') {
-                showMessage('Por favor, ingrese un estado para generar el número de registro.', 'danger');
-                return;
-            }
-            const data = {};
+        // =================================================================
+        // 2. LÓGICA DEL FORMULARIO DE LOGIN Y CIERRE DE SESIÓN
+        // =================================================================
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('login-error');
             
-            // Recolectar todos los datos del formulario
-            for (const [key, value] of formData.entries()) {
-                // Intenta convertir números
-                if (form.elements[key].type === 'number') {
-                    data[key] = parseInt(value) || 0;
-                } else {
-                    data[key] = value.trim();
-                }
+            // Static Example Credentials
+            const authorizedUsers = [
+                { username: 'admin', password: '1234' },
+                { username: 'usuario1', password: 'password1' },
+                { username: 'analista05', password: 'analista_pass' },
+                { username: 'operador_zulia', password: 'zulia2025' },
+            ];
+
+            const foundUser = authorizedUsers.find(user => user.username === username);
+
+            if (foundUser && foundUser.password === password) {
+                // Autenticación exitosa
+                sessionStorage.setItem('isAuthenticated', 'true');
+                showContent(); // Llama a showContent para cambiar la vista
+            } else {
+                // Error de credenciales
+                errorMessage.textContent = 'Usuario o contraseña incorrectos.';
+                errorMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
             }
-
-            // Añadir el número de registro automático a los datos
-            const registroData = {
-                ...Object.fromEntries(formData.entries()),
-                n_registro: n_registro
-            };
-
-            // Construir el cuerpo del correo electrónico
-            let emailBody = "Datos del Registro:\n";
-            for (const key in registroData) {
-                emailBody += `${key}: ${registroData[key]}\n`;
-            }
-
-            // Abrir el cliente de correo electrónico
-            const subject = `Nuevo Registro ORA/ORAPC - N° ${n_registro}`;
-            const mailtoUri = `mailto:data2023equidad@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
-            window.location.href = mailtoUri;
-            showMessage('✅ Abriendo cliente de correo para enviar el registro. Por favor, revise su bandeja de salida.', 'success');
         });
 
-        // Event listener para el botón "Cerrar Sesión"
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            // Elimina la bandera de autenticación de la sesión
+        document.getElementById('logoutBtn').addEventListener('click', () => {
             sessionStorage.removeItem('isAuthenticated');
-            // Redirige al usuario a la página de login
-            window.location.href = 'login.html';
+            showContent(); // Vuelve a mostrar el login
         });
 
-        // Event listener para el botón "Limpiar Todo el Registro"
         document.getElementById('clearAllBtn').addEventListener('click', function() {
-            const confirmation = confirm('¡ADVERTENCIA! Estás a punto de eliminar TODOS los registros guardados. Esta acción es irreversible. ¿Estás seguro de que deseas continuar?');
-            if (confirmation) { // Esta lógica también debería moverse al backend
-                // fetch('/limpiar-todo', { method: 'POST' }); // Ejemplo de cómo se haría
-                showMessage('🗑️ Todos los registros han sido eliminados.', 'danger');
-            } else {
-                showMessage('Operación de limpieza cancelada.', 'info');
+            const confirmation = confirm('¡ADVERTENCIA! Estás a punto de limpiar el formulario actual. Esta acción no se puede deshacer. ¿Estás seguro?');
+            if (confirmation) { 
+                document.getElementById('dataForm').reset();
+                document.getElementById('registro-automatico').textContent = '-';
+                showAppMessage('Formulario limpiado.', 'info');
             }
         });
+        
+        // =================================================================
+        // 3. FUNCIONES DE UTILIDAD Y LÓGICA DE LA APP PRINCIPAL
+        // =================================================================
+        
+        let isAppInitialized = false; // Flag to avoid reinitializations
+        
+        function initApp() {
+            if (isAppInitialized) return; // Si ya está inicializado, no hacer nada
 
-        /**
-         * Muestra un mensaje temporal al usuario.
-         * @param {string} msg - El mensaje a mostrar.
-         * @param {'success'|'danger'|'info'} type - El tipo de mensaje para aplicar estilos (success, danger, info).
-         */
-        function showMessage(msg, type = 'success') {
-            const messageElement = document.getElementById('message');
-            messageElement.textContent = msg;
-            messageElement.style.display = 'block';
+            // Inicializa los listeners y funciones del formulario principal
+            updateDateTime();
+            setInterval(updateDateTime, 1000); 
             
-            // Eliminar clases de tipo anteriores y añadir la nueva
-            messageElement.classList.remove('message-success', 'message-danger', 'message-info');
-            messageElement.classList.add(`message-${type}`);
-
-            // Ocultar mensaje después de 6 segundos
-            setTimeout(() => {
-                messageElement.style.display = 'none';
-                messageElement.classList.remove('message-success', 'message-danger', 'message-info'); // Limpiar clases al ocultar
-            }, 6000);
-        }
-
-        // Lógica para la navegación por pestañas
-        const tabLinks = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                const tabId = link.getAttribute('data-tab');
-
-                // Desactivar todas las pestañas y contenidos
-                tabLinks.forEach(item => item.classList.remove('active'));
-                tabContents.forEach(item => item.classList.remove('active'));
-
-                // Activar la pestaña y contenido seleccionados
-                link.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-navigation button').forEach(button => {
+                button.addEventListener('click', () => openTab(button.getAttribute('data-tab')));
             });
-        });
+            openTab('tab-1');
 
-        // --- Lógica para ID automático y Fecha/Hora ---
-
-        const estadoInput = document.getElementById('estado');
-        const registroDisplay = document.getElementById('registro-automatico');
-
-        // PEGA AQUÍ LA URL GENERADA AL PUBLICAR TU HOJA COMO CSV
-        // Reemplaza el texto de abajo con la URL que generaste al publicar tu hoja de cálculo como CSV.
-        const googleSheetURL = 'PEGA_AQUI_TU_URL_DE_PUBLICACION_CSV'; // <-- ¡Aquí debes pegar el enlace CSV!
-
-        // Función que se encarga de generar el ID
-        const triggerIdGeneration = function() {
-            const estado = estadoInput.value.trim();
-            // No hacer nada si el estado no tiene al menos 4 caracteres
-            if (estado.length < 4) {
-                return;
-            }
-
-            const diminutivo = estado.substring(0, 4).toLowerCase();
-            const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+            checkInitialTheme(); 
             
-            // --- LÓGICA MODIFICADA: Pedir el correlativo al servidor ---
-            function obtenerCorrelativo() {
-                if (!googleSheetURL || googleSheetURL.includes('PEGA_AQUI')) {
-                    console.error("URL de Google Sheets no configurada. Por favor, edita el archivo index.html y añade la URL de publicación correcta.");
-                    registroDisplay.textContent = 'Error de Config.';
-                    return;
-                }
-                Papa.parse(googleSheetURL, {
-                    download: true,
-                    header: true,
-                    complete: function(results) {
-                        if (results && results.data) {
-                            const registrosFiltrados = results.data.filter(row => row.estado && row.estado.toLowerCase() === estado.toLowerCase());
-                            const correlativo = registrosFiltrados.length + 1;
-                            const correlativoFormateado = correlativo.toString().padStart(2, '0');
-                            registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
-                        } else {
-                            console.error("Error al leer los datos de Google Sheets:", results.errors);
-                            registroDisplay.textContent = 'Error';
-                        }
-                    },
-                    error: function(error) {
-                        console.error("Error al descargar el archivo CSV:", error);
-                        registroDisplay.textContent = 'Error';
-                    }
-                });
-            }
-            // Llamar a la función que hace el trabajo
-            obtenerCorrelativo();
-        };
+            dataForm.addEventListener('submit', handleFormSubmit);
 
-        // Usar el evento 'input' que es más robusto que 'keyup' y funciona con autocompletado.
-        estadoInput.addEventListener('input', triggerIdGeneration);
-
-        // Leer los datos de Google Sheets al cargar la página
-        window.addEventListener('DOMContentLoaded', (event) => {
-            // Si el navegador autocompleta el campo de estado al cargar,
-            // llamamos directamente a la función para generar el ID.
+            // Logic for automatic ID and Date/Time
+            const estadoInput = document.getElementById('estado');
+            estadoInput.addEventListener('input', triggerIdGeneration);
             if (estadoInput.value.trim() !== '') {
                 triggerIdGeneration();
             }
-        });
 
-        // Actualizar la fecha y hora cada segundo
-        const datetimeDisplay = document.getElementById('datetime-display');
+            isAppInitialized = true; // Marcar como inicializado
+        }
+        
         function updateDateTime() {
+            const datetimeDisplay = document.getElementById('datetime-display');
             const now = new Date();
-            // Formato de fecha: DD/MM/YYYY
+            // Date Format: DD/MM/YYYY
             const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
             const formattedDate = now.toLocaleDateString('es-ES', dateOptions);
-
-            // Formato de hora con segundos: HH:MM:SS
+            // Time format with seconds: HH:MM:SS
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
             const formattedTime = now.toLocaleTimeString('es-ES', timeOptions);
-            
             datetimeDisplay.textContent = `${formattedDate} ${formattedTime}`;
         }
 
-        setInterval(updateDateTime, 1000);
-        updateDateTime(); // Llamada inicial
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-link[data-tab="${tabId}"]`).classList.add('active');
+        }
 
+        function toggleTheme() {
+            const isDarkMode = body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function checkInitialTheme() {
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+        }
+        
+        // --- Form Submission Logic ---
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(dataForm);
+            const n_registro = document.getElementById('registro-automatico').textContent;
+            
+            if (n_registro === '-') {
+                showAppMessage('Por favor, ingrese un estado para generar el número de registro.', 'danger');
+                return;
+            }
+
+            const data = Object.fromEntries(formData.entries());
+            data.n_registro = n_registro; // Añadir el número de registro
+
+            const submitButton = dataForm.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Guardando...';
+
+            // Llamada al lado del servidor (Code.gs)
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    if (response.success) {
+                        showAppMessage(response.message, 'success');
+                        form.reset();
+                        document.getElementById('registro-automatico').textContent = '-';
+                        openTab('tab-1');
+                    } else {
+                        showAppMessage(response.message, 'danger');
+                    }
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '💾 Guardar Registro';
+                })
+                .withFailureHandler(function(error) {
+                    showAppMessage('Error de comunicación con el servidor: ' + error.message, 'danger');
+                    submitButton.disabled = false; // Reactiva el botón en caso de error
+                    submitButton.innerHTML = '💾 Guardar Registro';
+                })
+                .submitApplicationForm(data); // Llama a la función en Code.gs
+        }
+
+        // --- Automatic ID Generation Logic ---
+        function triggerIdGeneration() {
+            const estadoInput = document.getElementById('estado');
+            const registroDisplay = document.getElementById('registro-automatico');
+            const estado = estadoInput.value.trim();
+
+            if (estado.length < 4) {
+                registroDisplay.textContent = '-';
+                return;
+            }
+
+            registroDisplay.textContent = 'Generando...';
+
+            google.script.run
+                .withSuccessHandler(function(correlativo) {
+                    if (typeof correlativo === 'number') {
+                        const diminutivo = estado.substring(0, 4).toLowerCase();
+                        const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
+                        const correlativoFormateado = correlativo.toString().padStart(2, '0');
+                        registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
+                    } else {
+                        // Si el backend devuelve un error como string
+                        registroDisplay.textContent = 'Error';
+                        showAppMessage(correlativo, 'danger');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error("Error al obtener el correlativo:", error);
+                    registroDisplay.textContent = 'Error';
+                    showAppMessage('Fallo al generar ID: ' + error.message, 'danger');
+                })
+                .getCorrelativoPorEstado(estado);
+        }
+
+        function showAppMessage(msg, type = 'info') {
+            const messageDisplay = document.getElementById('message');            
+            messageDisplay.textContent = msg;
+            messageDisplay.className = ''; // Clear previous classes
+            messageDisplay.classList.add(`message-${type}`);
+            messageDisplay.style.display = 'block';
+            setTimeout(() => { messageDisplay.style.display = 'none'; }, 5000);
+        }
     </script>
-
 </body>
 </html>
