@@ -1002,8 +1002,8 @@
         // 3. FUNCIONES DE UTILIDAD Y LÓGICA DE LA APP PRINCIPAL
         // =================================================================
         
-        // IMPORTANTE: Reemplaza esto con la URL de tu implementación Web App de Google Apps Script
-        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbxHtuR3hyTdE3PYT3SCgz_7QDIDuVT8ncE77p8EN2U-b1bV0sAc8-YiwjbMXOZWCEvw4g/exec';
+        // IMPORTANTE: Cuando el HTML está en Apps Script, usamos google.script.run
+        // NO necesitas la URL de Apps Script aquí
 
         let isAppInitialized = false; // Flag to avoid reinitializations
         
@@ -1076,7 +1076,7 @@
         }
         
         // --- Form Submission Logic ---
-        async function handleFormSubmit(event) {
+        function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
             const formData = new FormData(dataForm);
@@ -1087,40 +1087,54 @@
                 return;
             }
 
-            const data = Object.fromEntries(formData.entries());
-            data.n_registro = n_registro; // Añadir el número de registro
+            // Convertir FormData a objeto
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            data.n_registro = n_registro;
 
             const submitButton = dataForm.querySelector('button[type="submit"]');
             submitButton.disabled = true;
             submitButton.textContent = 'Guardando...';
 
-            try {
-                if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
-                    throw new Error('La URL del script no está configurada en el código.');
-                }
+            // Verificar si estamos en el entorno de Google Apps Script
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                // Usar google.script.run para enviar datos al servidor
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success) {
+                            showAppMessage(result.message || '✅ Registro guardado correctamente.', 'success');
+                            form.reset();
+                            document.getElementById('registro-automatico').textContent = '-';
+                            openTab('tab-1');
+                        } else {
+                            throw new Error(result.message || 'Error desconocido al guardar.');
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        showAppMessage('❌ Error del servidor: ' + error.message, 'danger');
+                    })
+                    .submitApplicationForm(data);
+            } else {
+                // Modo de prueba (si no estamos en Apps Script)
+                console.log("📋 Datos a enviar (modo prueba):", data);
+                showAppMessage('✅ Datos preparados para enviar. Revisa la consola (F12).', 'info');
+                
+                // Simular éxito después de 1 segundo
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '💾 Guardar Registro';
+                    showAppMessage('✅ En modo de prueba. Los datos se mostrarían en consola.', 'info');
+                }, 1000);
+                return; // No continuar con el envío real
+            }
 
-                // Usamos fetch para conectar con la Web App
-                const response = await fetch(appsScriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify(data) // Enviamos los datos como JSON
-                });
-
-                const result = await response.json();
-
-                if (result.status === 'success' || result.success) {
-                    showAppMessage(result.message || 'Registro guardado correctamente.', 'success');
-                    form.reset();
-                    document.getElementById('registro-automatico').textContent = '-';
-                    openTab('tab-1');
-                } else {
-                    throw new Error(result.message || 'Error desconocido al guardar.');
-                }
-            } catch (error) {
-                showAppMessage('Error: ' + error.message, 'danger');
-            } finally {
+            // Restaurar el botón después de 5 segundos (por si hay algún error)
+            setTimeout(() => {
                 submitButton.disabled = false;
                 submitButton.innerHTML = '💾 Guardar Registro';
-            }
+            }, 5000);
         }
 
         // --- Automatic ID Generation Logic ---
@@ -1140,30 +1154,28 @@
             clearTimeout(idGenerationTimeout);
 
             // Establecer nuevo timeout (debounce)
-            idGenerationTimeout = setTimeout(async () => {
+            idGenerationTimeout = setTimeout(() => {
                 registroDisplay.textContent = 'Generando...';
 
-                try {
-                    if (!appsScriptURL || appsScriptURL.includes('PEGA_AQUI')) {
-                        registroDisplay.textContent = 'Sin Conexión';
-                        return;
-                    }
-
-                    // Solicitud GET para obtener el correlativo
-                    const response = await fetch(`${appsScriptURL}?estado=${encodeURIComponent(estado)}`);
-                    const data = await response.json();
-
-                    if (data.correlativo) {
-                        const diminutivo = estado.substring(0, 4).toLowerCase();
-                        const fecha = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'2-digit' }).replace(/\//g, '');
-                        const correlativoFormateado = data.correlativo.toString().padStart(2, '0');
-                        registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
-                    } else {
-                        registroDisplay.textContent = 'Error';
-                    }
-                } catch (error) {
-                    console.error("Error al obtener ID:", error);
-                    registroDisplay.textContent = 'Error';
+                // Generar ID localmente (modo offline/fallback)
+                const diminutivo = estado.substring(0, 4).toLowerCase();
+                const fecha = new Date().toLocaleDateString('es-ES', { 
+                    day:'2-digit', 
+                    month:'2-digit', 
+                    year:'2-digit' 
+                }).replace(/\//g, '');
+                
+                // Usar timestamp para un ID único
+                const timestamp = Date.now().toString().slice(-4);
+                const correlativo = parseInt(timestamp) % 99 + 1;
+                const correlativoFormateado = correlativo.toString().padStart(2, '0');
+                
+                registroDisplay.textContent = `${fecha}-${diminutivo}${correlativoFormateado}`;
+                
+                // Si estamos en Apps Script, podríamos obtener un ID del servidor
+                if (typeof google !== 'undefined' && google.script && google.script.run) {
+                    // Aquí podrías llamar a una función del servidor para obtener un ID real
+                    // google.script.run.withSuccessHandler(handleServerId).getNextId(estado);
                 }
             }, 500);
         }
@@ -1174,8 +1186,28 @@
             messageDisplay.className = ''; // Clear previous classes
             messageDisplay.classList.add(`message-${type}`);
             messageDisplay.style.display = 'block';
-            setTimeout(() => { messageDisplay.style.display = 'none'; }, 5000);
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => { 
+                if (messageDisplay.textContent === msg) {
+                    messageDisplay.style.display = 'none'; 
+                }
+            }, 5000);
         }
+        
+        // Función para verificar si estamos en Apps Script
+        function isGoogleAppsScriptEnvironment() {
+            return typeof google !== 'undefined' && google.script && google.script.run;
+        }
+        
+        // Verificar entorno al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (isGoogleAppsScriptEnvironment()) {
+                console.log("✅ Conectado a Google Apps Script");
+            } else {
+                console.log("⚠️ Modo de prueba - No conectado a Google Apps Script");
+            }
+        });
     </script>
 </body>
 </html>
